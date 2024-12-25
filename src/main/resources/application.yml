@@ -1,0 +1,42 @@
+server:
+  servlet:
+    contextPath: /DEMO_API
+  port: 8080
+kai:
+  name: DEMO_API
+  key: keyTest
+  threadName: DEMO_API
+  pollSize: 100
+  error:
+    code996: "Error insert request to DB#{0}"
+    code997: "Cannot be processed"
+    code998: "Timeout {0}"
+    code999: "Internal Server Error {0}"
+    code801: "Request type not valid"
+    code802: "problem with calculating timeout or sendtime in request type 'response'"
+    code803: "RequestId not exist"
+    code804: "Request lacks valid information"
+    code805: "Problem with command in request type 'request'"
+    code700: "API key not exists"
+    code701: "API not exist"
+    code333: "Don't have method validate for AuthenType"
+spring:
+  application:
+    name: KAIASIA_DEMO
+  database:
+    postgres: true
+  postgredatasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://14.225.254.212:5432/KAI?currentSchema=for_test
+    username: for_test
+    password: for_test@2024
+    maximum-pool-size: 50
+    idleTimeout: 120000
+    minimumIdle: 10
+  jpa:
+    show-sql: false
+    open-in-view: false
+
+dbinfo:
+  apiRequest: request_in
+  apiResponse: request_out
