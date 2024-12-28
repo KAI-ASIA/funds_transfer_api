@@ -4,8 +4,8 @@ server:
   port: 8025
 kai:
   name: FUND_TRANSFER_API
-  key: keyCuaHoangDe
-  threadName: DEMO_API
+  key: h04ng14md3ptr4iv4il0n
+  threadName: FUNDS_TRANSFER_API
   pollSize: 100
   error:
     code996: "Error insert request to DB#{0}"
