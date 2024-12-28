@@ -16,6 +16,12 @@ public class ApiResponseDAO extends CommonDAO implements IApiResponseDAO{
     @Autowired
     private PosgrestDAOHelper posgrestDAOHelper;
 
+    /**
+     * Insert phản hồi từ hệ thống vào db.
+     * @param apiRes - Phản hồi cần insert.
+     * @return Số bản ghi được thực thi thành công.
+     * @throws Exception
+     */
     @Override
     public int insert(ApiResponseBean apiRes) throws Exception {
         String sql = "INSERT INTO " + this.getTableName() + "(req_id, receive_time, response_time, request_msg, response_msg, request_api, request_node, process_node,status, end_process_time ,start_process_time, response_node, receive_node) " +
@@ -38,6 +44,12 @@ public class ApiResponseDAO extends CommonDAO implements IApiResponseDAO{
         return result;
     }
 
+    /**
+     * Lấy ra response theo ID.
+     * @param reqId - ID của response.
+     * @return Response tương ứng.
+     * @throws Exception
+     */
     @Override
     public ApiResponseBean getRes(String reqId) throws Exception {
         String sql = "SELECT * from " + this.getTableName() + " where req_id = :REQ_ID";
@@ -47,6 +59,13 @@ public class ApiResponseDAO extends CommonDAO implements IApiResponseDAO{
         return result;
     }
 
+    /**
+     * Lấy danh sách response theo trạng thái và số lượng truyền vào.
+     * @param status - Trạng thái của response.
+     * @param limit - Số lượng giới hạn.
+     * @return Danh sách response tương ứng.
+     * @throws Exception
+     */
     @Override
     public List<ApiResponseBean> getApiResponseByStatus(String status, int limit) throws Exception {
         String sql = "SELECT * FROM " + this.getTableName() + " WHERE status =:STATUS LIMIT " + limit;
@@ -64,6 +83,12 @@ public class ApiResponseDAO extends CommonDAO implements IApiResponseDAO{
         return posgrestDAOHelper.update(sql, paramMap);
     }
 
+    /**
+     * Cập nhật trạng thái của response thành process.
+     * @param ids - Daanh sách các response
+     * @param startTime - Thời gian bắt đầu xử lý
+     * @throws Exception
+     */
     @Override
     public void updateReq2Process(List<String> ids, Date startTime) throws Exception {
         String sql = "UPDATE " + this.getTableName() + " set status = :STATUS, start_process_time= :START_PROCESS_TIME, process_node = :PROCESS_NODE where req_id in (:IDS)";
@@ -75,6 +100,11 @@ public class ApiResponseDAO extends CommonDAO implements IApiResponseDAO{
         posgrestDAOHelper.update(sql, param);
     }
 
+    /**
+     * Dỗi, không muốn xử lý. Cho nó về reject
+     * @param ids - Daanh sách các response
+     * @throws Exception
+     */
     @Override
     public void updateReq2Reject(List<String> ids) throws Exception {
         String sql = "UPDATE " + this.getTableName() + " set status = :STATUS, process_node = :PROCESS_NODE where req_id in (:IDS)";
@@ -85,6 +115,11 @@ public class ApiResponseDAO extends CommonDAO implements IApiResponseDAO{
         posgrestDAOHelper.update(sql, param);
     }
 
+    /**
+     * Cập nhật response sau khi xử lý xong
+     * @param apiRes - Response xử lý xong
+     * @throws Exception
+     */
     @Override
     public void updateResAfterProcessed(ApiResponseBean apiRes) throws Exception {
         String sql = "UPDATE " + this.getTableName() + " set status = :STATUS, response_msg= :RESPONSE_MSG, end_process_time=:END_PROCESS_TIME where req_id= :REQ_ID";

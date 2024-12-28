@@ -17,6 +17,10 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.LinkedHashMap;
 
+/**
+ * Lớp MainRestController đóng vai trò là REST controller xử lý các yêu cầu API.
+ * Controller này chịu trách nhiệm nhận, xác thực, xử lý và trả về kết quả từ endpoint "/process".
+ */
 @RestController
 public class MainRestController {
 
@@ -31,6 +35,13 @@ public class MainRestController {
     @Autowired
     ProcessService processService;
 
+    /**
+     * Endpoint xử lý yêu cầu API.
+     *
+     * @param httpRequest đối tượng HTTP request
+     * @param request payload yêu cầu API
+     * @return ResponseEntity chứa phản hồi API
+     */
     @RequestMapping(
             value = {"/process"},
             method = {RequestMethod.POST}
@@ -41,6 +52,7 @@ public class MainRestController {
     )
     @ResponseBody
     public ResponseEntity<ApiResponse> process(HttpServletRequest httpRequest, @RequestBody ApiRequest request) {
+        // Bắt đầu tính thời gian xử lý
         long a = System.currentTimeMillis();
         String LOCATION = "";
 
@@ -48,8 +60,11 @@ public class MainRestController {
             logger.info("MsgFromClient_Receive:{}", request);
         }
 
+        // Xác thực yêu cầu thông qua ProcessService
         ApiError error = this.processService.validate(request);
+
         ApiResponse response = new ApiResponse();
+
         if (ApiError.OK_CODE.equals(error.getCode())) {
             error = this.validate.validate(request);
         }
@@ -99,5 +114,4 @@ public class MainRestController {
         }
         return new ResponseEntity(response, HttpStatus.OK);
     }
-
 }

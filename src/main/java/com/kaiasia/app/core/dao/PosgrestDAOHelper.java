@@ -22,6 +22,13 @@ public class PosgrestDAOHelper {
     public PosgrestDAOHelper() {
     }
 
+    /**
+     * Thêm, sửa, xóa vào db.
+     * @param sql - Câu lệnh sql native.
+     * @param paramMap - Tham số truyền vào.
+     * @return Số bản ghi được thực thi thành công.
+     * @throws Exception
+     */
     public int update(String sql, Map paramMap) throws Exception {
         try {
             paramMap = paramMap == null ? new HashMap() : paramMap;
@@ -33,6 +40,13 @@ public class PosgrestDAOHelper {
         }
     }
 
+    /**
+     * Thực thi truy vấn và trả về dạng số nguyên (thường đi với COUNT).
+     * @param sql - Câu lệnh sql native.
+     * @param paramMap - Tham số truyền vào.
+     * @return Số lượng bản ghi.
+     * @throws Exception
+     */
     public int query4Int(String sql, Map paramMap) throws Exception {
         try {
             Number result = (Number)this.namedParameterJdbcTemplatePostgres.queryForObject(sql, (Map)(paramMap == null ? new HashMap() : paramMap), Integer.class);
@@ -42,6 +56,15 @@ public class PosgrestDAOHelper {
         }
     }
 
+    /**
+     * Lấy bản ghi đầu tiên trong lệnh truy vấn.
+     * @param sql - Câu lệnh sql native.
+     * @param paramMap - Tham số truyền vào.
+     * @param rowMapper - Đối tượng chuyển đổi bản ghi thành object.
+     * @return Object tương ứng.
+     * @param <T> - Kiểu object trả về.
+     * @throws Exception
+     */
     public <T> T querySingle(String sql, Map paramMap, BeanPropertyRowMapper rowMapper) throws Exception {
         try {
             paramMap = paramMap == null ? new HashMap() : paramMap;
@@ -53,6 +76,15 @@ public class PosgrestDAOHelper {
         }
     }
 
+    /**
+     * Truy vấn dữ liệu trong db.
+     * @param sql - Câu lệnh sql native.
+     * @param paramMap - Tham số truyền vào.
+     * @param rowMapper - Đối tượng chuyển đổi bản ghi thành object.
+     * @return Danh sách object tương ứng.
+     * @param <T> - Kiểu object trả về.
+     * @throws Exception
+     */
     public <T> List<T> query(String sql, Map paramMap, BeanPropertyRowMapper rowMapper) throws Exception {
         try {
             paramMap = paramMap == null ? new HashMap() : paramMap;

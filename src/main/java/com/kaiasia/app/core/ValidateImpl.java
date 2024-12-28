@@ -23,6 +23,11 @@ public class ValidateImpl implements IValidate {
 	@Autowired
 	private ServiceRegister serviceRegister;
 
+	/**
+	 * Kiểm tra hàm validate đã đăng ký chưa.
+	 * @param request - Request đầu vào.
+	 * @return ApiError tương ứng
+	 */
 	@Override
 	public ApiError validate(ApiRequest request) {
 
@@ -41,5 +46,4 @@ public class ValidateImpl implements IValidate {
 		}
 		return err;
 	}
-
 }

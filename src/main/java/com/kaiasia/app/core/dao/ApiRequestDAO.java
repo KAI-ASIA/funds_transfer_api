@@ -16,6 +16,12 @@ public class ApiRequestDAO extends CommonDAO implements IApiRequestDAO{
     @Autowired
     private PosgrestDAOHelper posgrestDAOHelper;
 
+    /**
+     * Lấy Request từ db theo ID.
+     * @param var1 tham số truyền vào - ID của request.
+     * @return Request có ID phù hợp.
+     * @throws Exception
+     */
     @Override
     public ApiRequestBean getByReqID(String var1) throws Exception {
         ApiRequestBean result = null;
@@ -26,6 +32,12 @@ public class ApiRequestDAO extends CommonDAO implements IApiRequestDAO{
         return result;
     }
 
+    /**
+     * Insert request vào db.
+     * @param apiReq - RequestBean được convert từ request đầu vào.
+     * @return Số bản ghi được thực thi thành công.
+     * @throws Exception
+     */
     @Override
     public int insert(ApiRequestBean apiReq) throws Exception {
         String sql = "INSERT INTO " + this.getTableName() + "(req_id,  priority, receive_time, request_msg, request_api, request_node, status, timeout, authen_type) VALUES (:REQ_ID, :PRIORITY, :RECEIVE_TIME, :REQUEST_MSG, :REQUEST_API, :REQUEST_NODE, :STATUS, :TIMEOUT, :AUTHEN_TYPE)";
@@ -43,6 +55,12 @@ public class ApiRequestDAO extends CommonDAO implements IApiRequestDAO{
         return result;
     }
 
+    /**
+     * Lấy những request chưa dược xử lý (Có status recceive) theo số lượng truyền vào.
+     * @param limit - Số luợng giới hạn.
+     * @return Danh sách các request phù hợp.
+     * @throws Exception
+     */
     @Override
     public List<ApiRequestBean> getReqs(int limit) throws Exception {
         String sql = "SELECT  * from " + this.getTableName() + " where  status=:STATUS order by  priority asc, id  limit " + limit + " for update skip locked";
@@ -52,6 +70,13 @@ public class ApiRequestDAO extends CommonDAO implements IApiRequestDAO{
         return result;
     }
 
+    /**
+     * Cập nhật trạng thái cho request.
+     * @param reqId - ID của request cần cập nhật.
+     * @param status - Trạng thái cần cập nhật.
+     * @return Số bản ghi được thực thi thành công.
+     * @throws Exception
+     */
     @Override
     public int updateReq(String reqId, String status) throws Exception {
         String sql = "UPDATE " + this.getTableName() + " set status = :STATUS where req_id = :ID";
@@ -62,6 +87,13 @@ public class ApiRequestDAO extends CommonDAO implements IApiRequestDAO{
         return result;
     }
 
+    /**
+     * Cập nhật trạng thái cho nhiều request.
+     * @param ids - Danh sách ID các request cần cập nhật.
+     * @param status - Trạng thái cần cập nhật.
+     * @return Số bản ghi được thực thi thành công.
+     * @throws Exception
+     */
     @Override
     public int updateReqList(List<String> ids, String status) throws Exception {
         String sql = "UPDATE " + this.getTableName() + " set status = :STATUS where req_id in (:IDS)";

@@ -8,6 +8,10 @@ public class ApiUtils {
 
     private static String currentHostName;
 
+    /**
+     * Lấy hostname. Lấy không được thì lấy IP. Nếu ẫn không được thì dỗi.
+     * @return
+     */
     public static String getCurrentHostName(){
         try {
             if(StringUtils.isBlank(currentHostName)){

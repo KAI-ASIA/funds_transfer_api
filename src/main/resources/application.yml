@@ -8,17 +8,28 @@ kai:
   threadName: FUNDS_TRANSFER_API
   pollSize: 100
   error:
-    code999: "Internal Server Error {0}"
-    code998: "Timeout {0}"
-    code701: "API not exist"
-    code700: "API key not exists"
-    code803: "RequestId not exist"
     code996: "Error insert request to DB#{0}"
+    code997: "Cannot be processed"
+    code998: "Timeout {0}"
+    code999: "Internal Server Error {0}"
+    code801: "Request type not valid"
+    code802: "problem with calculating timeout or sendtime in request type 'response'"
+    code803: "RequestId not exist"
+    code804: "Request lacks valid information"
+    code805: "Problem with command in request type 'request'"
+    code700: "API key not exists"
+    code701: "API not exist"
+    code333: "Don't have method validate for AuthenType"
 spring:
   application:
     name: KAIASIA_FUNDS_TRANSFER
   config:
-    location: optional:file:local.yml
+    import: optional:file:application.yml
+  auth_api:
+    url:
+    timeout:
+    apiKey:
+    apiName:
   database:
     postgres: true
   postgredatasource:
