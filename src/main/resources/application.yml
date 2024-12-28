@@ -17,6 +17,8 @@ kai:
 spring:
   application:
     name: KAIASIA_FUNDS_TRANSFER
+  config:
+    location: optional:file:local.yml
   database:
     postgres: true
   postgredatasource:
