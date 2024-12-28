@@ -1,6 +1,4 @@
-package com.kaiasia.app.service;
-
-
+package com.kaiasia.app.service.fundstransfer.service;
 
 import com.kaiasia.app.core.model.ApiBody;
 import com.kaiasia.app.core.model.ApiError;
@@ -13,24 +11,22 @@ import com.kaiasia.app.register.Register;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
-
 import java.util.HashMap;
 import java.util.Map;
 
 @KaiService
 @Slf4j
-public class TestService {
+public class FTService {
 
     @Autowired
     GetErrorUtils apiErrorUtils;
 
-    // Validate nghiệp vụ (xem các field có đủ không (username, password).
-    @KaiMethod(name = "TestService", type = Register.VALIDATE)
+    @KaiMethod(name = "FTService", type = Register.VALIDATE)
     public ApiError validate(ApiRequest req){
-       return new ApiError(ApiError.OK_CODE, ApiError.OK_DESC);
+        return new ApiError(ApiError.OK_CODE, ApiError.OK_DESC);
     }
 
-    @KaiMethod(name = "TestService")
+    @KaiMethod(name = "FTService")
     public ApiResponse process(ApiRequest req){
         ApiResponse apiResponse = new ApiResponse();
         ApiBody apiBody = new ApiBody();
