@@ -3,7 +3,6 @@ package com.kaiasia.app.core.utils;
 public class ApiConstant {
 
     public static abstract class STATUS{
-        //
         public static final String WAITING = "WAITING";
         public static final String RECEIVE = "RECEIVE";
         public static final String PROCESSING = "PROCESSING";
