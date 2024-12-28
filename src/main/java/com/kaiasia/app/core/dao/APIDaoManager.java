@@ -44,6 +44,7 @@ public class APIDaoManager implements IAPIDaoManager{
      * @throws Exception
      */
     @Override
+    @Transactional
     public List<ApiRequestBean> fetchAPIReqs(int limit) throws Exception {
         List<ApiRequestBean> listReqs = this.apiRequestDao.getReqs(limit);
         List<ApiRequestBean> result = new ArrayList();

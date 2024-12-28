@@ -63,7 +63,7 @@ public class ApiRequestDAO extends CommonDAO implements IApiRequestDAO{
      */
     @Override
     public List<ApiRequestBean> getReqs(int limit) throws Exception {
-        String sql = "SELECT  * from " + this.getTableName() + " where  status=:STATUS order by  priority asc, id  limit " + limit + " for update";
+        String sql = "SELECT  * from " + this.getTableName() + " where  status=:STATUS order by  priority asc, id  limit " + limit + " for update skip locked";
         HashMap<String, Object> param = new HashMap();
         param.put("STATUS", ApiConstant.STATUS.RECEIVE);
         List<ApiRequestBean> result = posgrestDAOHelper.query(sql, param, new BeanPropertyRowMapper(ApiRequestBean.class));

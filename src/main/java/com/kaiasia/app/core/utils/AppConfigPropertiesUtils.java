@@ -74,5 +74,4 @@ public class AppConfigPropertiesUtils {
     public String getPort() {
         return this.env.getProperty("server.port");
     }
-    
 }

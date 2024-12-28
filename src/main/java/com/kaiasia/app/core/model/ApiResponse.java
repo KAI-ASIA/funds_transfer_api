@@ -23,5 +23,4 @@ public class ApiResponse {
             this.body.put("status", "FAILE");
         }
     }
-
 }

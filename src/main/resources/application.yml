@@ -1,10 +1,10 @@
 server:
   servlet:
-    contextPath: /DEMO_API
-  port: 8080
+    contextPath: /FUND_TRANSFER_API
+  port: 8025
 kai:
-  name: DEMO_API
-  key: keyTest
+  name: FUND_TRANSFER_API
+  key: keyCuaHoangDe
   threadName: DEMO_API
   pollSize: 100
   error:
@@ -23,6 +23,11 @@ kai:
 spring:
   application:
     name: KAIASIA_DEMO
+  auth_api:
+    url:
+    timeout:
+    apiKey:
+    apiName:
   database:
     postgres: true
   postgredatasource:

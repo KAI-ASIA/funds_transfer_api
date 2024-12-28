@@ -82,5 +82,4 @@ public class ReqIDAutoCreate {
             return -1L;
         }
     }
-
 }

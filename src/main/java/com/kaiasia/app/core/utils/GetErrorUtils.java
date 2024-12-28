@@ -58,5 +58,4 @@ public class GetErrorUtils {
     public ApiError getTimeoutErr() {
         return this.getError("998");
     }
-
 }
