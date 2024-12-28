@@ -22,7 +22,7 @@ public class FTService {
     GetErrorUtils apiErrorUtils;
 
     @KaiMethod(name = "FTService", type = Register.VALIDATE)
-    public ApiError validate(ApiRequest req){
+    public ApiError validate(ApiRequest req) {
         return new ApiError(ApiError.OK_CODE, ApiError.OK_DESC);
     }
 
