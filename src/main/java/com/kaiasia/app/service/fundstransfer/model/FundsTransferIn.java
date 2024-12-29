@@ -1,6 +1,7 @@
 package com.kaiasia.app.service.fundstransfer.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import javax.validation.constraints.*;
 
@@ -25,7 +26,8 @@ public class FundsTransferIn {
     private String company;
 
     @NotBlank(message = "OTP is required")
-    private String OTP;
+    @JsonProperty("OTP")
+    private String otp;
 
     @NotBlank(message = "Transaction ID is required")
     private String transactionId;
@@ -36,7 +38,6 @@ public class FundsTransferIn {
     @NotBlank(message = "Credit account is required")
     private String creditAccount;
 
-    @NotBlank(message = "Bank ID is required")
     private String bankId;
 
     @NotNull(message = "Transaction amount is required")
