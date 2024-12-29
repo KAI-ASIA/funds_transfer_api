@@ -4,7 +4,7 @@ server:
   port: 8025
 kai:
   name: FUNDS_TRANSFER_API
-  key: h04ng14md3ptr4iv4il0n
+  key: funstransferh04ng14md3ptr4iv4ilu0n
   threadName: FUNDS_TRANSFER_API
   pollSize: 100
   error:
@@ -30,9 +30,9 @@ spring:
     postgres: true
   postgredatasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://14.225.254.212:5432/KAI?currentSchema=for_test
-    username: for_test
-    password: for_test@2024
+    url: jdbc:postgresql://14.225.254.212:5432/KAI_API?currentSchema=fund_transfer_api
+    username: fundtransfer_api
+    password: fundtransfer_api@2024
     maximum-pool-size: 50
     idleTimeout: 120000
     minimumIdle: 10
@@ -49,14 +49,14 @@ dep-api:
     apiName: AUTH_API
     url: http://localhost:8059/AUTH_API/process
     timeout: 60000
-    apiKey: authKey
+    apiKey: authq51klfoni1ezxl5f2ckpfx248
   t24utilsApi:
     apiName: T24UTILS_API
     url: http://localhost:8025/T24UTILS_API/process
     timeout: 60000
-    apiKey: t24utilsKey
+    apiKey: T24utils51klfoni1ezxl5f2ckpfx248
   napasApi:
     apiName: NAPAS_API
     url: http://localhost:8025/NAPAS_API/process
     timeout: 60000
-    apiKey: napasKey
+    apiKey: napas861klfoni1ezxl5f2ck771
