@@ -10,6 +10,7 @@ import com.kaiasia.app.register.KaiMethod;
 import com.kaiasia.app.register.KaiService;
 import com.kaiasia.app.register.Register;
 import com.kaiasia.app.service.fundstransfer.model.FundsTransferIn;
+import com.kaiasia.app.service.fundstransfer.utils.ObjectAndJsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -27,9 +28,6 @@ public class FTInsideService {
     @Autowired
     GetErrorUtils apiErrorUtils;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
     @KaiMethod(name = "FTInsideService", type = Register.VALIDATE)
     public ApiError validate(ApiRequest req) {
         try {
@@ -42,7 +40,7 @@ public class FTInsideService {
                 return apiErrorUtils.getError("804", new String[]{"Transaction part is required"});
             }
 
-            FundsTransferIn input = objectMapper.convertValue(body.get("transaction"), FundsTransferIn.class);
+            FundsTransferIn input = ObjectAndJsonUtils.fromObject(body.get("transaction"), FundsTransferIn.class);
 
             List<String> missingFields = Arrays.stream(input.getClass().getDeclaredFields())
                                                .peek(field -> field.setAccessible(true))

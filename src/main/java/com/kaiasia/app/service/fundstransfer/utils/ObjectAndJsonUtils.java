@@ -22,6 +22,10 @@ public class ObjectAndJsonUtils {
         return mapper.readValue(json, clazz);
     }
 
+    public static <T> T fromObject(Object object, Class<T> clazz) throws IllegalArgumentException {
+        return mapper.convertValue(object, clazz);
+    }
+
     public static String toJson(Object obj) throws JsonProcessingException {
         return writer.writeValueAsString(obj);
     }
