@@ -15,7 +15,7 @@ public class DepApiConfig {
     private Environment env;
     private DepApiProperties authApi;
     private DepApiProperties t24utilsApi;
-
+    private DepApiProperties napasApi;
     public DepApiProperties getApiProperties(String name) {
         String prefix = "dep-api." + name;
         return DepApiProperties
@@ -27,16 +27,5 @@ public class DepApiConfig {
                 .build();
     }
 
-    @Setter
-    @Getter
-    @Data
-    @Builder
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class DepApiProperties {
-        private String url;
-        private long timeout;
-        private String apiKey;
-        private String apiName;
-    }
+
 }

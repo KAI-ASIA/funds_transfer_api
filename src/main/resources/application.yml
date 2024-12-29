@@ -46,7 +46,7 @@ dbinfo:
 dep-api:
   authApi:
     apiName: AUTH_API
-    url: http://localhost:8025/AUTH_API/process
+    url: http://localhost:8059/AUTH_API/process
     timeout: 60000
     apiKey: authKey
   t24utilsApi:
@@ -54,3 +54,8 @@ dep-api:
     url: http://localhost:8025/T24UTILS_API/process
     timeout: 60000
     apiKey: t24utilsKey
+  napasApi:
+    apiName: NAPAS_API
+    url: http://localhost:8025/NAPAS_API/process
+    timeout: 60000
+    apiKey: napasKey
