@@ -23,6 +23,7 @@ public class ServiceUtils {
             if(body.get("transaction") == null) {
                 return apiErrorUtils.getError("804", new String[]{"Transaction part is required"});
             }
+            System.out.println(body.get("transaction"));
 
             T input = ObjectAndJsonUtils.fromObject(body.get("transaction"), clazz);
             Set<ConstraintViolation<T>> violations = validator.validate(input);
