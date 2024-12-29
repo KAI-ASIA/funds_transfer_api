@@ -25,11 +25,6 @@ spring:
     name: KAIASIA_FUNDS_TRANSFER
   config:
     import: optional:file:application.yml
-  auth_api:
-    url:
-    timeout:
-    apiKey:
-    apiName:
   database:
     postgres: true
   postgredatasource:
@@ -47,3 +42,15 @@ spring:
 dbinfo:
   apiRequest: request_in
   apiResponse: request_out
+
+dep-api:
+  authApi:
+    apiName: AUTH_API
+    url: http://localhost:8025/AUTH_API/process
+    timeout: 60000
+    apiKey: authKey
+  t24utilsApi:
+    apiName: T24UTILS_API
+    url: http://localhost:8025/T24UTILS_API/process
+    timeout: 60000
+    apiKey: t24utilsKey
