@@ -2,8 +2,11 @@ package com.kaiasia.app.service.fundstransfer.utils;
 
 import com.kaiasia.app.core.model.ApiBody;
 import com.kaiasia.app.core.model.ApiError;
+import com.kaiasia.app.core.model.ApiHeader;
 import com.kaiasia.app.core.model.ApiRequest;
 import com.kaiasia.app.core.utils.GetErrorUtils;
+import com.kaiasia.app.service.fundstransfer.configuration.DepApiProperties;
+
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ConstraintViolation;
@@ -39,5 +42,23 @@ public class ServiceUtils {
         } catch (IllegalArgumentException e) {
             return apiErrorUtils.getError("600", new String[]{"Invalid request body format"});
         }
+    }
+
+    public static ApiRequest setUpApiEnvironment(ApiRequest req, DepApiProperties depApiProperties, String transOrEnquiry, Object data) {
+        ApiRequest request = new ApiRequest();
+        ApiHeader apitHeader = new ApiHeader();
+        apitHeader.setReqType("REQUEST");
+        apitHeader.setApi(depApiProperties.getApiName());
+        apitHeader.setApiKey(depApiProperties.getApiKey());
+        apitHeader.setPriority(1);
+        apitHeader.setChannel(req.getHeader().getChannel());
+        apitHeader.setLocation(req.getHeader().getLocation());
+        apitHeader.setRequestAPI("FUNDS_TRANSFER_API");
+        request.setHeader(apitHeader);
+        ApiBody apiBody = new ApiBody();
+        apiBody.put("command", "GET_" + transOrEnquiry);
+        apiBody.put(transOrEnquiry.toLowerCase(), data);
+        request.setBody(apiBody);
+        return request;
     }
 }
