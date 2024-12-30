@@ -9,6 +9,7 @@ import com.kaiasia.app.register.Register;
 import com.kaiasia.app.service.fundstransfer.configuration.DepApiConfig;
 import com.kaiasia.app.service.fundstransfer.configuration.DepApiProperties;
 import com.kaiasia.app.service.fundstransfer.model.Auth1In;
+import com.kaiasia.app.service.fundstransfer.model.Auth1Out;
 import com.kaiasia.app.service.fundstransfer.model.Auth3In;
 import com.kaiasia.app.service.fundstransfer.model.FundsTransferIn;
 import com.kaiasia.app.service.fundstransfer.utils.ApiCallHelper;
@@ -47,11 +48,11 @@ public class FTInsideService {
         ApiError error;
 
         DepApiProperties authApiProperties = depApiConfig.getAuthApi();
-        Map<String, String> requestData = (HashMap) req.getBody().get("transaction");
-        String location = "FTInside-" + requestData.get("sessionId") + "-" + requestData.get("customerID");
+        FundsTransferIn requestData = ObjectAndJsonUtils.fromObject(req.getBody().get("transaction"), FundsTransferIn.class);
+        String location = "FTInside-" + requestData.getSessionId() + "-" + requestData.getCustomerID();
 
-        Auth1In auth1In = new Auth1In("takeSession", requestData.get("sessionId"));
-        ApiRequest auth1Request = setUpApiEnvironment(req, authApiProperties, "TRANSACTION", auth1In);
+        Auth1In auth1In = new Auth1In("takeSession", requestData.getSessionId());
+        ApiRequest auth1Request = ServiceUtils.setUpApiEnvironment(req, authApiProperties, "TRANSACTION", auth1In);
 
         String username = null;
 
@@ -63,8 +64,8 @@ public class FTInsideService {
                 response.setError(error);
                 return response;
             }
-            Map<String, String> auth1ResponseData = (HashMap) auth1Response.getBody().get("enquiry");
-            username = auth1ResponseData.get("username");
+            Auth1Out auth1ResponseData = ObjectAndJsonUtils.fromObject(auth1Response.getBody().get("enquiry"), Auth1Out.class);
+            username = auth1ResponseData.getUsername();
         } catch (Exception e) {
             log.error("{}:{}", location + "#Calling Auth-1", e.getMessage());
             error = apiErrorUtils.getError("999", new String[]{e.getMessage()});
@@ -78,8 +79,8 @@ public class FTInsideService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
         String formattedDate = sdf.format(new Date(currentTimeMillis));
 
-        Auth3In auth3In = new Auth3In("confirmOTP", requestData.get("sessionId"), username, requestData.get("OTP"), formattedDate, requestData.get("transactionId"));
-        ApiRequest auth3Request = setUpApiEnvironment(req, authApiProperties, "ENQUIRY", auth3In);
+        Auth3In auth3In = new Auth3In("confirmOTP", requestData.getSessionId(), username, requestData.getOtp(), formattedDate, requestData.getTransactionId());
+        ApiRequest auth3Request = ServiceUtils.setUpApiEnvironment(req, authApiProperties, "ENQUIRY", auth3In);
 
         try {
             ApiResponse auth3Response = ApiCallHelper.call(authApiProperties.getUrl(), HttpMethod.POST, ObjectAndJsonUtils.toJson(auth3Request), ApiResponse.class);
@@ -96,28 +97,39 @@ public class FTInsideService {
             return response;
         }
 
-        //TODO : Lưu thông tin va db Transaction_info
+        //TODO : Lưu thông tin vào db Transaction_info
 
+        DepApiProperties t24ApiProperties = depApiConfig.getT24utilsApi();
+        FundsTransferIn fundsTransferIn = FundsTransferIn.builder()
+                                                         .authenType("fundTransfer")
+                                                         .transactionId(requestData.getTransactionId())
+                                                         .debitAccount(requestData.getDebitAccount())
+                                                         .creditAccount(requestData.getCreditAccount())
+                                                         .transAmount(requestData.getTransAmount())
+                                                         .transDesc(requestData.getTransDesc())
+                                                         .build();
+        ApiRequest t24Request = ServiceUtils.setUpApiEnvironment(req, t24ApiProperties, "TRANSACTION", fundsTransferIn);
+
+        try {
+            ApiResponse t24Response = ApiCallHelper.call(t24ApiProperties.getUrl(), HttpMethod.POST, ObjectAndJsonUtils.toJson(t24Request), ApiResponse.class);
+            error = t24Response.getError();
+            if (error != null || !"OK".equals(t24Response.getBody().get("status"))) {
+                log.error("{}:{}", location + "#After call T2405", error);
+                response.setError(error);
+                return response;
+            }
+        } catch (Exception e) {
+            log.error("{}:{}", location + "#Calling T2405", e.getMessage());
+            error = apiErrorUtils.getError("999", new String[]{e.getMessage()});
+            response.setError(error);
+            return response;
+        }
+
+        // TODO : Cập nhật thông tin vào db Transaction_info
         ApiBody body = new ApiBody();
         response.setBody(body);
         return response;
     }
 
-    private ApiRequest setUpApiEnvironment(ApiRequest req, DepApiProperties depApiProperties, String transOrEnquiry, Object data) {
-        ApiRequest request = new ApiRequest();
-        ApiHeader apitHeader = new ApiHeader();
-        apitHeader.setReqType("REQUEST");
-        apitHeader.setApi(depApiProperties.getApiName());
-        apitHeader.setApiKey(depApiProperties.getApiKey());
-        apitHeader.setPriority(1);
-        apitHeader.setChannel("API");
-        apitHeader.setLocation(req.getHeader().getLocation());
-        apitHeader.setRequestAPI("FUNDS_TRANSFER_API");
-        request.setHeader(apitHeader);
-        ApiBody apiBody = new ApiBody();
-        apiBody.put("command", "GET_" + transOrEnquiry);
-        apiBody.put(transOrEnquiry.toLowerCase(), data);
-        request.setBody(apiBody);
-        return request;
-    }
+
 }
