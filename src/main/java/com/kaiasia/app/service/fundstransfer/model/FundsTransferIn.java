@@ -5,6 +5,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import javax.validation.constraints.*;
 
+/**
+ * Class này dùng để định nghĩa dữ liệu cần gửi tới FundsTransfer và cũng có thể gửi tới T2405
+ */
 @Getter
 @Setter
 @AllArgsConstructor
