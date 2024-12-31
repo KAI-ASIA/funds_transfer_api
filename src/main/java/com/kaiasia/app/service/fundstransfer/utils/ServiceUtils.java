@@ -2,7 +2,6 @@ package com.kaiasia.app.service.fundstransfer.utils;
 
 import com.kaiasia.app.core.model.*;
 import com.kaiasia.app.core.utils.GetErrorUtils;
-import com.kaiasia.app.service.fundstransfer.configuration.DepApiProperties;
 
 import javax.validation.Validation;
 import javax.validation.Validator;
@@ -87,33 +86,5 @@ public class ServiceUtils {
         } catch (IllegalArgumentException e) {
             return apiErrorUtils.getError("600", new String[]{"Invalid request body format"});
         }
-    }
-
-    /**
-     * Thiết lập môi trường API bằng cách tạo đối tượng yêu cầu API với thông tin tiêu đề
-     * và nội dung được cấu hình dựa trên các tham số đầu vào.
-     *
-     * @param req             Đối tượng yêu cầu ban đầu chứa thông tin cơ bản.
-     * @param depApiProperties Cấu hình API cho dịch vụ liên quan.
-     * @param transOrEnquiry   Loại yêu cầu, ví dụ: "TRANSACTION" hoặc "ENQUIRY".
-     * @param data            Dữ liệu cần gửi trong phần nội dung yêu cầu.
-     * @return Đối tượng ApiRequest được cấu hình đầy đủ.
-     */
-    public static ApiRequest setUpApiEnvironment(ApiRequest req, DepApiProperties depApiProperties, String transOrEnquiry, Object data) {
-        ApiRequest request = new ApiRequest();
-        ApiHeader apitHeader = new ApiHeader();
-        apitHeader.setReqType("REQUEST");
-        apitHeader.setApi(depApiProperties.getApiName());
-        apitHeader.setApiKey(depApiProperties.getApiKey());
-        apitHeader.setPriority(1);
-        apitHeader.setChannel(req.getHeader().getChannel());
-        apitHeader.setLocation(req.getHeader().getLocation());
-        apitHeader.setRequestAPI("FUNDS_TRANSFER_API");
-        request.setHeader(apitHeader);
-        ApiBody apiBody = new ApiBody();
-        apiBody.put("command", "GET_" + transOrEnquiry);
-        apiBody.put(transOrEnquiry.toLowerCase(), data);
-        request.setBody(apiBody);
-        return request;
     }
 }
