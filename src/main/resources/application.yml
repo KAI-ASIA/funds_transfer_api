@@ -4,7 +4,7 @@ server:
   port: 8025
 kai:
   name: FUNDS_TRANSFER_API
-  key: funstransferh04ng14md3ptr4iv4ilu0n
+  key: fundstransferh04ng14md3ptr4iv4ilu0n
   threadName: FUNDS_TRANSFER_API
   pollSize: 100
   error:
