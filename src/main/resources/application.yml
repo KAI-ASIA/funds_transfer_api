@@ -43,7 +43,7 @@ spring:
 dbinfo:
   apiRequest: request_in
   apiResponse: request_out
-
+  transactionInfo: transaction_info
 dep-api:
   authApi:
     apiName: AUTH_API
