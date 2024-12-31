@@ -7,6 +7,7 @@ import com.kaiasia.app.register.KaiService;
 import com.kaiasia.app.register.Register;
 import com.kaiasia.app.service.fundstransfer.configuration.DepApiConfig;
 import com.kaiasia.app.service.fundstransfer.configuration.DepApiProperties;
+import com.kaiasia.app.service.fundstransfer.configuration.KaiApiRequestBuilderFactory;
 import com.kaiasia.app.service.fundstransfer.model.*;
 import com.kaiasia.app.service.fundstransfer.utils.ApiCallHelper;
 import com.kaiasia.app.service.fundstransfer.utils.ObjectAndJsonUtils;
@@ -17,6 +18,7 @@ import org.springframework.http.HttpMethod;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 
 @KaiService
 @Slf4j
@@ -27,6 +29,9 @@ public class FTInsideService {
 
     @Autowired
     private DepApiConfig depApiConfig;
+
+    @Autowired
+    private KaiApiRequestBuilderFactory kaiApiRequestBuilderFactory;
 
     @KaiMethod(name = "FTInsideService", type = Register.VALIDATE)
     public ApiError validate(ApiRequest req) {
@@ -48,7 +53,12 @@ public class FTInsideService {
 
         // Call Auth-1 api
         Auth1In auth1In = new Auth1In("takeSession", requestData.getSessionId());
-        ApiRequest auth1Request = ServiceUtils.setUpApiEnvironment(req, authApiProperties, "TRANSACTION", auth1In);
+        ApiRequest auth1Request = kaiApiRequestBuilderFactory.getBuilder()
+                                                             .api(authApiProperties.getApiName())
+                                                             .apiKey(authApiProperties.getApiKey())
+                                                             .bodyProperties("command", "GET_ENQUIRY")
+                                                             .bodyProperties("enquiry", auth1In)
+                                                             .build();
 
         String username = null;
 
@@ -85,7 +95,12 @@ public class FTInsideService {
         String formattedDate = sdf.format(new Date(currentTimeMillis));
 
         Auth3In auth3In = new Auth3In("confirmOTP", requestData.getSessionId(), username, requestData.getOtp(), formattedDate, requestData.getTransactionId());
-        ApiRequest auth3Request = ServiceUtils.setUpApiEnvironment(req, authApiProperties, "ENQUIRY", auth3In);
+        ApiRequest auth3Request = kaiApiRequestBuilderFactory.getBuilder()
+                                                             .api(authApiProperties.getApiName())
+                                                             .apiKey(authApiProperties.getApiKey())
+                                                             .bodyProperties("command", "GET_ENQUIRY")
+                                                             .bodyProperties("enquiry", auth3In)
+                                                             .build();
 
         try {
             ApiResponse auth3Response = ApiCallHelper.call(authApiProperties.getUrl(), HttpMethod.POST, ObjectAndJsonUtils.toJson(auth3Request), ApiResponse.class);
@@ -122,11 +137,16 @@ public class FTInsideService {
                                                          .transAmount(requestData.getTransAmount())
                                                          .transDesc(requestData.getTransDesc())
                                                          .build();
-        ApiRequest t24Request = ServiceUtils.setUpApiEnvironment(req, t24ApiProperties, "TRANSACTION", fundsTransferIn);
+        ApiRequest t2405Request = kaiApiRequestBuilderFactory.getBuilder()
+                                                             .api(t24ApiProperties.getApiName())
+                                                             .apiKey(t24ApiProperties.getApiKey())
+                                                             .bodyProperties("command", "GET_TRANSACTION")
+                                                             .bodyProperties("enquiry", fundsTransferIn)
+                                                             .build();
         FundsTransferOut fundsTransferOut = null;
 
         try {
-            ApiResponse t24Response = ApiCallHelper.call(t24ApiProperties.getUrl(), HttpMethod.POST, ObjectAndJsonUtils.toJson(t24Request), ApiResponse.class);
+            ApiResponse t24Response = ApiCallHelper.call(t24ApiProperties.getUrl(), HttpMethod.POST, ObjectAndJsonUtils.toJson(t2405Request), ApiResponse.class);
             error = t24Response.getError();
             if (error != null || !"OK".equals(t24Response.getBody().get("status"))) {
                 log.error("{}:{}", location + "#After call T2405", error);
