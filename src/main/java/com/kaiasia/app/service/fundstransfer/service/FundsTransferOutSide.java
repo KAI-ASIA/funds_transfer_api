@@ -8,6 +8,9 @@ import com.kaiasia.app.register.Register;
 import com.kaiasia.app.service.fundstransfer.configuration.DepApiConfig;
 import com.kaiasia.app.service.fundstransfer.configuration.DepApiProperties;
 import com.kaiasia.app.service.fundstransfer.configuration.KaiApiRequestBuilderFactory;
+import com.kaiasia.app.service.fundstransfer.dao.ITransactionInfoDAO;
+import com.kaiasia.app.service.fundstransfer.dao.impl.TransactionInfoDAO;
+import com.kaiasia.app.service.fundstransfer.model.TransactionInfo;
 import com.kaiasia.app.service.fundstransfer.utils.ApiCallHelper;
 import com.kaiasia.app.service.fundstransfer.utils.ObjectAndJsonUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +31,8 @@ public class FundsTransferOutSide {
     private DepApiConfig depApiConfig;
     @Autowired
     private KaiApiRequestBuilderFactory kaiApiRequestBuilderFactory;
+    @Autowired
+    private ITransactionInfoDAO transactionInfoDAO;
 
     @KaiMethod(name = "FundsTransferOutSide", type = Register.VALIDATE)
     public ApiError validate(ApiRequest request) {
@@ -127,7 +132,23 @@ public class FundsTransferOutSide {
             return response;
         }
 
-        //TODO: luu thong tin giao dich vao db
+        String customerId = (String) requestTransaction.get("customerID");
+        TransactionInfo transactionInfo = TransactionInfo.builder()
+                .transactionId(String.join("-", customerId, new SimpleDateFormat("ddMMyyyy").format(new Date())))
+                .customerId(customerId)
+                .otp((String) requestTransaction.get("OTP"))
+                .approvalMethod("SOFTOTP")
+                .insertTime(new Date())
+                .status("PROCESSING")
+                .build();
+        try {
+            transactionInfoDAO.insert(transactionInfo);
+        } catch (Exception e) {
+            log.error("{}#Failed to insert transaction {} to database:{}", location, transactionInfo, e.getMessage());
+            error = getErrorUtils.getError("500", new String[]{e.getMessage()});
+            response.setError(error);
+            return response;
+        }
 
         //Call T2405 - Funds transfer logic
         DepApiProperties t24utilsApiProperties = depApiConfig.getT24utilsApi();

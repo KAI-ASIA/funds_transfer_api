@@ -32,7 +32,7 @@ public class TransactionInfoDAO implements ITransactionInfoDAO {
         params.put("response_str", transactionInfo.getResponseStr());
         params.put("status", transactionInfo.getStatus());
         params.put("bank_trans_id", transactionInfo.getBankTransId());
-        params.put("insert_time", new Date());
+        params.put("insert_time", transactionInfo.getInsertTime());
         return posgrestDAOHelper.update(sql, params);
     }
 
