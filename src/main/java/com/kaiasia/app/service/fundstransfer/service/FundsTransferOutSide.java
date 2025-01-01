@@ -73,14 +73,14 @@ public class FundsTransferOutSide {
 
         // Call Auth-1 Check Session
         DepApiProperties authApiProperties = depApiConfig.getAuthApi();
-        HashMap<String, Object> auth1Enquiry = new HashMap<>();
-        auth1Enquiry.put("authenType", "takeSession");
-        auth1Enquiry.put("sessionId", requestTransaction.get("sessionId"));
+        HashMap<String, Object> auth1RequestEnquiry = new HashMap<>();
+        auth1RequestEnquiry.put("authenType", "takeSession");
+        auth1RequestEnquiry.put("sessionId", requestTransaction.get("sessionId"));
         ApiRequest auth1Request = kaiApiRequestBuilderFactory.getBuilder()
                 .api(authApiProperties.getApiName())
                 .apiKey(authApiProperties.getApiKey())
                 .bodyProperties("command", "GET_ENQUIRY")
-                .bodyProperties("enquiry", auth1Enquiry)
+                .bodyProperties("enquiry", auth1RequestEnquiry)
                 .build();
 
         String username = "";
@@ -102,18 +102,18 @@ public class FundsTransferOutSide {
 
 
         // Call Auth-3 Confirm OTP
-        HashMap<String, Object> auth3Enquiry = new HashMap<>();
-        auth3Enquiry.put("authenType", "confirmOTP");
-        auth3Enquiry.put("sessionId", requestTransaction.get("sessionId"));
-        auth3Enquiry.put("username", username);
-        auth3Enquiry.put("otp", requestTransaction.get("OTP"));
-        auth3Enquiry.put("transTime", new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
-        auth3Enquiry.put("transId", requestTransaction.get("transactionId"));
+        HashMap<String, Object> auth3RequestEnquiry = new HashMap<>();
+        auth3RequestEnquiry.put("authenType", "confirmOTP");
+        auth3RequestEnquiry.put("sessionId", requestTransaction.get("sessionId"));
+        auth3RequestEnquiry.put("username", username);
+        auth3RequestEnquiry.put("otp", requestTransaction.get("OTP"));
+        auth3RequestEnquiry.put("transTime", new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
+        auth3RequestEnquiry.put("transId", requestTransaction.get("transactionId"));
         ApiRequest auth3Request = kaiApiRequestBuilderFactory.getBuilder()
                 .api(authApiProperties.getApiName())
                 .apiKey(authApiProperties.getApiKey())
                 .bodyProperties("command", "GET_ENQUIRY")
-                .bodyProperties("enquiry", auth3Enquiry)
+                .bodyProperties("enquiry", auth3RequestEnquiry)
                 .build();
 
         try {
@@ -151,23 +151,24 @@ public class FundsTransferOutSide {
 
         //Call T2405 - Funds transfer logic
         DepApiProperties t24utilsApiProperties = depApiConfig.getT24utilsApi();
-        HashMap<String, Object> t2405Transaction = new HashMap<>();
-        t2405Transaction.put("authenType", "fundTransfer");
-        t2405Transaction.put("transactionId", requestTransaction.get("transactionId"));
-        t2405Transaction.put("debitAccount", requestTransaction.get("debitAccount"));
-        t2405Transaction.put("creditAccount", requestTransaction.get("creditAccount"));
-        t2405Transaction.put("bankId", requestTransaction.get("bankId"));
-        t2405Transaction.put("transAmount", requestTransaction.get("transAmount"));
-        t2405Transaction.put("transDesc", requestTransaction.get("transDesc"));
+        HashMap<String, Object> t2405RequestTransaction = new HashMap<>();
+        t2405RequestTransaction.put("authenType", "fundTransfer");
+        t2405RequestTransaction.put("transactionId", requestTransaction.get("transactionId"));
+        t2405RequestTransaction.put("debitAccount", requestTransaction.get("debitAccount"));
+        t2405RequestTransaction.put("creditAccount", requestTransaction.get("creditAccount"));
+        t2405RequestTransaction.put("bankId", requestTransaction.get("bankId"));
+        t2405RequestTransaction.put("transAmount", requestTransaction.get("transAmount"));
+        t2405RequestTransaction.put("transDesc", requestTransaction.get("transDesc"));
         ApiRequest t2405Request = kaiApiRequestBuilderFactory.getBuilder()
                 .api(t24utilsApiProperties.getApiName())
                 .apiKey(t24utilsApiProperties.getApiKey())
                 .bodyProperties("command", "GET_TRANSACTION")
-                .bodyProperties("enquiry", t2405Transaction)
+                .bodyProperties("transaction", t2405RequestTransaction)
                 .build();
 
+        ApiResponse t2405Response;
         try {
-            ApiResponse t2405Response = ApiCallHelper.call(t24utilsApiProperties.getUrl(), HttpMethod.POST, ObjectAndJsonUtils.toJson(t2405Request), ApiResponse.class);
+            t2405Response = ApiCallHelper.call(t24utilsApiProperties.getUrl(), HttpMethod.POST, ObjectAndJsonUtils.toJson(t2405Request), ApiResponse.class);
             error = t2405Response.getError();
             if (error != null || !"OK".equals(t2405Response.getBody().get("status"))) {
                 log.error("{}:{}", location + "#After call T2405", error);
@@ -181,26 +182,41 @@ public class FundsTransferOutSide {
             return response;
         }
 
+        HashMap t2405ResponseTransaction = (HashMap) t2405Response.getBody().get("transaction");
+        try {
+            HashMap<String, Object> params = new HashMap();
+            params.put("response_code", t2405ResponseTransaction.get("responseCode"));
+            params.put("bank_trans_id", t2405ResponseTransaction.get("FT"));
+            params.put("last_update", new Date());
+            transactionInfoDAO.update(transactionInfo.getTransactionId(), params);
+        } catch (Exception e) {
+            log.error("{}#Failed to update transaction {} to database:{}", location, transactionInfo, e.getMessage());
+            error = getErrorUtils.getError("501", new String[]{e.getMessage()});
+            response.setError(error);
+            return response;
+        }
+
         //Call NAPAS-2
         DepApiProperties napasApiProperties = depApiConfig.getNapasApi();
-        HashMap<String, Object> napas2Transaction = new HashMap<>();
-        napas2Transaction.put("authenType", "getTransFastAcc");
-        napas2Transaction.put("senderAccount", requestTransaction.get("debitAccount")); // chua ro rang du lieu
-        napas2Transaction.put("amount", requestTransaction.get("transAmount"));
-        napas2Transaction.put("ccy", "VND");
-        napas2Transaction.put("transRef", "VND"); // chua ro rang du lieu
-        napas2Transaction.put("benAcc", requestTransaction.get("creditAccount")); // chua ro rang du lieu
-        napas2Transaction.put("bankId", requestTransaction.get("bankId"));
-        napas2Transaction.put("transContent", requestTransaction.get("transDesc"));
+        HashMap<String, Object> napas2RequestTransaction = new HashMap<>();
+        napas2RequestTransaction.put("authenType", "getTransFastAcc");
+        napas2RequestTransaction.put("senderAccount", requestTransaction.get("debitAccount")); // chua ro rang du lieu
+        napas2RequestTransaction.put("amount", requestTransaction.get("transAmount"));
+        napas2RequestTransaction.put("ccy", "VND");
+        napas2RequestTransaction.put("transRef", "VND"); // chua ro rang du lieu
+        napas2RequestTransaction.put("benAcc", requestTransaction.get("creditAccount")); // chua ro rang du lieu
+        napas2RequestTransaction.put("bankId", requestTransaction.get("bankId"));
+        napas2RequestTransaction.put("transContent", requestTransaction.get("transDesc"));
         ApiRequest napas2Request = kaiApiRequestBuilderFactory.getBuilder()
                 .api(napasApiProperties.getApiName())
                 .apiKey(napasApiProperties.getApiKey())
                 .bodyProperties("command", "GET_TRANSACTION")
-                .bodyProperties("enquiry", napas2Transaction)
+                .bodyProperties("enquiry", napas2RequestTransaction)
                 .build();
 
+        ApiResponse napas2Response;
         try {
-            ApiResponse napas2Response = ApiCallHelper.call(napasApiProperties.getUrl(), HttpMethod.POST, ObjectAndJsonUtils.toJson(napas2Request), ApiResponse.class);
+            napas2Response = ApiCallHelper.call(napasApiProperties.getUrl(), HttpMethod.POST, ObjectAndJsonUtils.toJson(napas2Request), ApiResponse.class);
             error = napas2Response.getError();
             if (error != null || !"OK".equals(napas2Response.getBody().get("status"))) {
                 log.error("{}:{}", location + "#After call Napas2", error);
@@ -213,6 +229,13 @@ public class FundsTransferOutSide {
             return response;
         }
 
+        ApiBody body = new ApiBody();
+        HashMap<String, Object> responseTransaction = new HashMap<>();
+        responseTransaction.put("responseCode", "00");
+        responseTransaction.put("transactionNO", t2405ResponseTransaction.get("FT"));
+        responseTransaction.put("napasRef", ((HashMap) napas2Response.getBody().get("transaction")).get("napasRef"));
+        body.put("transaction", responseTransaction);
+        response.setBody(body);
         return response;
     }
 }
