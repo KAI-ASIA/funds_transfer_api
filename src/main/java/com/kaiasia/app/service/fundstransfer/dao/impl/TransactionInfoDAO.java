@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 public class TransactionInfoDAO implements ITransactionInfoDAO {
@@ -36,4 +38,12 @@ public class TransactionInfoDAO implements ITransactionInfoDAO {
         return posgrestDAOHelper.update(sql, params);
     }
 
+    @Override
+    public int update(String transactionId, Map<String, Object> param) throws Exception {
+        Set<String> keys = param.keySet();
+        StringBuilder sql = new StringBuilder("update " + tableName + " set ");
+        sql.append(keys.stream().map(k -> k + "=" + ":" + k).collect(Collectors.joining()));
+        sql.append(" where transaction_id = ").append(transactionId);
+        return posgrestDAOHelper.update(sql.toString(), param);
+    }
 }

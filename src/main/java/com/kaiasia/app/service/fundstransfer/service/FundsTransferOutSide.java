@@ -9,7 +9,6 @@ import com.kaiasia.app.service.fundstransfer.configuration.DepApiConfig;
 import com.kaiasia.app.service.fundstransfer.configuration.DepApiProperties;
 import com.kaiasia.app.service.fundstransfer.configuration.KaiApiRequestBuilderFactory;
 import com.kaiasia.app.service.fundstransfer.dao.ITransactionInfoDAO;
-import com.kaiasia.app.service.fundstransfer.dao.impl.TransactionInfoDAO;
 import com.kaiasia.app.service.fundstransfer.model.TransactionInfo;
 import com.kaiasia.app.service.fundstransfer.utils.ApiCallHelper;
 import com.kaiasia.app.service.fundstransfer.utils.ObjectAndJsonUtils;
