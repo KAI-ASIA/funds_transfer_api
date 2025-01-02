@@ -7,7 +7,6 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
-import java.util.concurrent.TimeoutException;
 
 /**
  * Lớp tiện ích dùng để thực hiện các cuộc gọi API với nhiều tùy chọn cấu hình.
@@ -33,7 +32,7 @@ public class ApiCallHelper<T> {
     // Kiểu dữ liệu của phản hồi mong đợi từ API
     private Class<T> responseType;
 
-    private long timeout;
+    private long readTimeout;
 
     /**
      * Tạo RestTemplate với cấu hình timeout.
@@ -41,50 +40,50 @@ public class ApiCallHelper<T> {
      * @param timeout Thời gian timeout (tính bằng milliseconds).
      * @return Đối tượng RestTemplate được cấu hình timeout.
      */
-    private static RestTemplate createRestTemplateWithTimeout(long timeout) {
+    private static RestTemplate createRestTemplateWithTimeout(long timeout) { // read timeout # connect timeout
         SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-        requestFactory.setConnectTimeout((int)timeout);
-        requestFactory.setReadTimeout((int)timeout);
+        requestFactory.setConnectTimeout((int) timeout);
+        requestFactory.setReadTimeout((int) timeout);
         return new RestTemplate(requestFactory);
     }
 
     /**
      * Thực hiện một cuộc gọi API đơn giản với phương thức GET.
      *
-     * @param url Đường dẫn URL của API.
+     * @param url          Đường dẫn URL của API.
      * @param responseType Kiểu dữ liệu của phản hồi từ API.
-     * @param <T> Kiểu dữ liệu của phản hồi.
+     * @param <T>          Kiểu dữ liệu của phản hồi.
      * @return Phản hồi từ API.
      */
-    public static <T> T call(String url, Class<T> responseType, long timeout) throws TimeoutException {
+    public static <T> T call(String url, Class<T> responseType, long timeout) {
         return call(url, HttpMethod.GET, responseType, timeout);
     }
 
     /**
      * Thực hiện cuộc gọi API với URL, phương thức HTTP và kiểu phản hồi được chỉ định.
      *
-     * @param url Đường dẫn URL của API.
-     * @param httpMethod Phương thức HTTP (vd: GET, POST).
+     * @param url          Đường dẫn URL của API.
+     * @param httpMethod   Phương thức HTTP (vd: GET, POST).
      * @param responseType Kiểu dữ liệu của phản hồi từ API.
-     * @param <T> Kiểu dữ liệu của phản hồi.
+     * @param <T>          Kiểu dữ liệu của phản hồi.
      * @return Phản hồi từ API.
      */
-    public static <T> T call(String url, HttpMethod httpMethod, Class<T> responseType, long timeout) throws TimeoutException {
+    public static <T> T call(String url, HttpMethod httpMethod, Class<T> responseType, long timeout) {
         return call(url, httpMethod, "", responseType, timeout);
     }
 
     /**
      * Thực hiện cuộc gọi API với URL, phương thức HTTP, nội dung body và kiểu phản hồi được chỉ định.
      *
-     * @param url Đường dẫn URL của API.
-     * @param httpMethod Phương thức HTTP (vd: POST, PUT).
-     * @param body Nội dung body của request.
+     * @param url          Đường dẫn URL của API.
+     * @param httpMethod   Phương thức HTTP (vd: POST, PUT).
+     * @param body         Nội dung body của request.
      * @param responseType Kiểu dữ liệu của phản hồi từ API.
-     * @param timeout Thời gian timeout (tính bằng milliseconds).
-     * @param <T> Kiểu dữ liệu của phản hồi.
+     * @param timeout      Thời gian timeout (tính bằng milliseconds).
+     * @param <T>          Kiểu dữ liệu của phản hồi.
      * @return Phản hồi từ API.
      */
-    public static <T> T call(String url, HttpMethod httpMethod, String body, Class<T> responseType, long timeout) throws TimeoutException {
+    public static <T> T call(String url, HttpMethod httpMethod, String body, Class<T> responseType, long timeout) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setContentLength(body.getBytes().length);
@@ -94,16 +93,16 @@ public class ApiCallHelper<T> {
     /**
      * Thực hiện cuộc gọi API với các tham số chi tiết.
      *
-     * @param url Đường dẫn URL của API.
-     * @param httpMethod Phương thức HTTP (vd: GET, POST).
-     * @param body Nội dung body của request.
-     * @param headers Header của request.
+     * @param url          Đường dẫn URL của API.
+     * @param httpMethod   Phương thức HTTP (vd: GET, POST).
+     * @param body         Nội dung body của request.
+     * @param headers      Header của request.
      * @param responseType Kiểu dữ liệu của phản hồi từ API.
-     * @param timeout Thời gian timeout (tính bằng milliseconds).
-     * @param <T> Kiểu dữ liệu của phản hồi.
+     * @param timeout      Thời gian timeout (tính bằng milliseconds).
+     * @param <T>          Kiểu dữ liệu của phản hồi.
      * @return Phản hồi từ API.
      */
-    public static <T> T call(String url, HttpMethod httpMethod, String body, MultiValueMap<String, String> headers, Class<T> responseType, long timeout) throws TimeoutException{
+    public static <T> T call(String url, HttpMethod httpMethod, String body, MultiValueMap<String, String> headers, Class<T> responseType, long timeout) {
         RestTemplate restTemplate = createRestTemplateWithTimeout(timeout);
         RequestEntity<String> entity = new RequestEntity<>(body, headers, httpMethod, URI.create(url));
         ResponseEntity<T> response = restTemplate.exchange(entity, responseType);
@@ -117,8 +116,8 @@ public class ApiCallHelper<T> {
      *
      * @return Phản hồi từ API.
      */
-    public T call() throws TimeoutException {
-        return call(url, httpMethod, body, headers, responseType, timeout);
+    public T call()  {
+        return call(url, httpMethod, body, headers, responseType, readTimeout);
     }
 
     /**
@@ -137,7 +136,7 @@ public class ApiCallHelper<T> {
      * @param <Y> Kiểu dữ liệu của phản hồi từ API.
      */
     public static class ApiCallBuilder<Y> {
-        private ApiCallHelper<Y> apiCallHelper;
+        private final ApiCallHelper<Y> apiCallHelper;
 
         private ApiCallBuilder() {
             apiCallHelper = new ApiCallHelper<>();
@@ -146,6 +145,7 @@ public class ApiCallHelper<T> {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             apiCallHelper.headers = headers;
+            apiCallHelper.readTimeout = 60000;
         }
 
         /**
@@ -200,6 +200,11 @@ public class ApiCallHelper<T> {
          */
         public ApiCallBuilder<Y> responseType(Class<Y> responseType) {
             this.apiCallHelper.responseType = responseType;
+            return this;
+        }
+
+        public ApiCallBuilder<Y> readTimeout(long readTimeout) {
+            this.apiCallHelper.readTimeout = readTimeout;
             return this;
         }
 
