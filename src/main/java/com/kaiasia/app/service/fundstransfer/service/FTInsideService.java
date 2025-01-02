@@ -1,6 +1,7 @@
 package com.kaiasia.app.service.fundstransfer.service;
 
 import com.kaiasia.app.core.model.*;
+import com.kaiasia.app.core.utils.ApiConstant;
 import com.kaiasia.app.core.utils.GetErrorUtils;
 import com.kaiasia.app.register.KaiMethod;
 import com.kaiasia.app.register.KaiService;
@@ -8,6 +9,7 @@ import com.kaiasia.app.register.Register;
 import com.kaiasia.app.service.fundstransfer.configuration.DepApiConfig;
 import com.kaiasia.app.service.fundstransfer.configuration.DepApiProperties;
 import com.kaiasia.app.service.fundstransfer.configuration.KaiApiRequestBuilderFactory;
+import com.kaiasia.app.service.fundstransfer.dao.ITransactionInfoDAO;
 import com.kaiasia.app.service.fundstransfer.model.*;
 import com.kaiasia.app.service.fundstransfer.utils.ApiCallHelper;
 import com.kaiasia.app.service.fundstransfer.utils.ObjectAndJsonUtils;
@@ -16,9 +18,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 
 @KaiService
 @Slf4j
@@ -33,13 +35,16 @@ public class FTInsideService {
     @Autowired
     private KaiApiRequestBuilderFactory kaiApiRequestBuilderFactory;
 
+    @Autowired
+    private ITransactionInfoDAO transactionInfoDAO;
+
     @KaiMethod(name = "FTInsideService", type = Register.VALIDATE)
     public ApiError validate(ApiRequest req) {
         return ServiceUtils.validate(req, FundsTransferIn.class, apiErrorUtils, "TRANSACTION");
     }
 
     @KaiMethod(name = "FTInsideService")
-    public ApiResponse process(ApiRequest req) {
+    public ApiResponse process(ApiRequest req) throws ParseException {
         ApiResponse response = new ApiResponse();
         ApiHeader header = req.getHeader();
         header.setReqType("RESPONSE");
@@ -125,7 +130,27 @@ public class FTInsideService {
             return response;
         }
 
-        //TODO : Lưu thông tin vào db Transaction_info
+        // Chuẩn bị data insert vào db
+        SimpleDateFormat sdfForInsertDb = new SimpleDateFormat("yyyyMMddHHmmss");
+        Date insertTime = sdfForInsertDb.parse(sdf.format(new Date()));
+
+        TransactionInfo transactionInfo = TransactionInfo.builder()
+                                                         .transactionId(requestData.getCustomerID() + "-" + sdfForInsertDb.format(insertTime))
+                                                         .customerId(requestData.getCustomerID())
+                                                         .otp(requestData.getOtp())
+                                                         .approvalMethod("SOFTOTP")
+                                                         .insertTime(insertTime)
+                                                         .status(ApiConstant.STATUS.PROCESSING)
+                                                         .build();
+        // Insert vào db
+        try {
+            transactionInfoDAO.insert(transactionInfo);
+        } catch (Exception e) {
+            log.error("{}#Failed to insert transaction {} to database:{}", location, transactionInfo, e.getMessage());
+            error = apiErrorUtils.getError("502", new String[]{e.getMessage()});
+            response.setError(error);
+            return response;
+        }
 
         // Call T2405 api
         DepApiProperties t24ApiProperties = depApiConfig.getT24utilsApi();
