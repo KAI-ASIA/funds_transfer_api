@@ -38,6 +38,7 @@ public class TransactionInfoDAO implements ITransactionInfoDAO {
         return posgrestDAOHelper.update(sql, params);
     }
 
+    @Override
     public int update(String transactionId, Map<String, Object> param) throws Exception {
         if (param == null || param.isEmpty()) {
             throw new IllegalArgumentException("No fields to update");
