@@ -20,8 +20,10 @@ kai:
     code700: "API key not exists"
     code701: "API not exist"
     code600: "Problem in mapper object"
-    code501: "Failed to update to the database#{0}"
-    code502: "Failed to insert to the database#{0}"
+    code501: "Failed to insert to the database#{0}"
+    code502: "Failed to update to the database#{0}"
+    code503: "Failed to read to the database#{0}"
+    code504: "Failed to delete to the database#{0}"
     code333: "Don't have method validate for AuthenType"
 spring:
   application:
