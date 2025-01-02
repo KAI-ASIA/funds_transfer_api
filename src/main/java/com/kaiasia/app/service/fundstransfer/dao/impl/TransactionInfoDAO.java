@@ -40,10 +40,21 @@ public class TransactionInfoDAO implements ITransactionInfoDAO {
 
     @Override
     public int update(String transactionId, Map<String, Object> param) throws Exception {
+        if (param == null || param.isEmpty()) {
+            throw new IllegalArgumentException("No fields to update");
+        }
+
         Set<String> keys = param.keySet();
-        StringBuilder sql = new StringBuilder("update " + tableName + " set ");
-        sql.append(keys.stream().map(k -> k + "=" + ":" + k).collect(Collectors.joining()));
-        sql.append(" where transaction_id = ").append(transactionId);
+        StringBuilder sql = new StringBuilder("UPDATE ").append(tableName)
+                                                        .append(" SET ")
+                                                        .append(keys.stream()
+                                                                    .map(k -> k + " = :" + k)
+                                                                    .collect(Collectors.joining(", ")))
+                                                        .append(" WHERE transaction_id = :transactionId");
+        param.put("transactionId", transactionId);
+
         return posgrestDAOHelper.update(sql.toString(), param);
     }
+
+
 }

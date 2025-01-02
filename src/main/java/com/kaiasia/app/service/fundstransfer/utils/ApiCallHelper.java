@@ -2,10 +2,12 @@ package com.kaiasia.app.service.fundstransfer.utils;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Lớp tiện ích dùng để thực hiện các cuộc gọi API với nhiều tùy chọn cấu hình.
@@ -31,6 +33,21 @@ public class ApiCallHelper<T> {
     // Kiểu dữ liệu của phản hồi mong đợi từ API
     private Class<T> responseType;
 
+    private long timeout;
+
+    /**
+     * Tạo RestTemplate với cấu hình timeout.
+     *
+     * @param timeout Thời gian timeout (tính bằng milliseconds).
+     * @return Đối tượng RestTemplate được cấu hình timeout.
+     */
+    private static RestTemplate createRestTemplateWithTimeout(long timeout) {
+        SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+        requestFactory.setConnectTimeout((int)timeout);
+        requestFactory.setReadTimeout((int)timeout);
+        return new RestTemplate(requestFactory);
+    }
+
     /**
      * Thực hiện một cuộc gọi API đơn giản với phương thức GET.
      *
@@ -39,8 +56,8 @@ public class ApiCallHelper<T> {
      * @param <T> Kiểu dữ liệu của phản hồi.
      * @return Phản hồi từ API.
      */
-    public static <T> T call(String url, Class<T> responseType) {
-        return call(url, HttpMethod.GET, responseType);
+    public static <T> T call(String url, Class<T> responseType, long timeout) throws TimeoutException {
+        return call(url, HttpMethod.GET, responseType, timeout);
     }
 
     /**
@@ -52,8 +69,8 @@ public class ApiCallHelper<T> {
      * @param <T> Kiểu dữ liệu của phản hồi.
      * @return Phản hồi từ API.
      */
-    public static <T> T call(String url, HttpMethod httpMethod, Class<T> responseType) {
-        return call(url, httpMethod, "", responseType);
+    public static <T> T call(String url, HttpMethod httpMethod, Class<T> responseType, long timeout) throws TimeoutException {
+        return call(url, httpMethod, "", responseType, timeout);
     }
 
     /**
@@ -63,14 +80,15 @@ public class ApiCallHelper<T> {
      * @param httpMethod Phương thức HTTP (vd: POST, PUT).
      * @param body Nội dung body của request.
      * @param responseType Kiểu dữ liệu của phản hồi từ API.
+     * @param timeout Thời gian timeout (tính bằng milliseconds).
      * @param <T> Kiểu dữ liệu của phản hồi.
      * @return Phản hồi từ API.
      */
-    public static <T> T call(String url, HttpMethod httpMethod, String body, Class<T> responseType) {
+    public static <T> T call(String url, HttpMethod httpMethod, String body, Class<T> responseType, long timeout) throws TimeoutException {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setContentLength(body.getBytes().length);
-        return call(url, httpMethod, body, headers, responseType);
+        return call(url, httpMethod, body, headers, responseType, timeout);
     }
 
     /**
@@ -81,15 +99,16 @@ public class ApiCallHelper<T> {
      * @param body Nội dung body của request.
      * @param headers Header của request.
      * @param responseType Kiểu dữ liệu của phản hồi từ API.
+     * @param timeout Thời gian timeout (tính bằng milliseconds).
      * @param <T> Kiểu dữ liệu của phản hồi.
      * @return Phản hồi từ API.
      */
-    public static <T> T call(String url, HttpMethod httpMethod, String body, MultiValueMap<String, String> headers, Class<T> responseType) {
-        RestTemplate restTemplate = new RestTemplate();
+    public static <T> T call(String url, HttpMethod httpMethod, String body, MultiValueMap<String, String> headers, Class<T> responseType, long timeout) throws TimeoutException{
+        RestTemplate restTemplate = createRestTemplateWithTimeout(timeout);
         RequestEntity<String> entity = new RequestEntity<>(body, headers, httpMethod, URI.create(url));
         ResponseEntity<T> response = restTemplate.exchange(entity, responseType);
         T apiResponse = response.getBody();
-        log.info("Gọi API thành công: {}", apiResponse);
+        log.info("Gọi API thành công: " + apiResponse);
         return apiResponse;
     }
 
@@ -98,8 +117,8 @@ public class ApiCallHelper<T> {
      *
      * @return Phản hồi từ API.
      */
-    public T call() {
-        return call(url, httpMethod, body, headers, responseType);
+    public T call() throws TimeoutException {
+        return call(url, httpMethod, body, headers, responseType, timeout);
     }
 
     /**
