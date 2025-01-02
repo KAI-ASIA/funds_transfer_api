@@ -1,4 +1,4 @@
-package com.kaiasia.app.service.fundstransfer.model;
+package com.kaiasia.app.service.fundstransfer.model.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;

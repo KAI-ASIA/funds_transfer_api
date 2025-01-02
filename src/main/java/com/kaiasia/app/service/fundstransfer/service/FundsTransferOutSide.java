@@ -144,7 +144,7 @@ public class FundsTransferOutSide {
             transactionInfoDAO.insert(transactionInfo);
         } catch (Exception e) {
             log.error("{}#Failed to insert transaction {} to database:{}", location, transactionInfo, e.getMessage());
-            error = getErrorUtils.getError("500", new String[]{e.getMessage()});
+            error = getErrorUtils.getError("501", new String[]{e.getMessage()});
             response.setError(error);
             return response;
         }
@@ -191,7 +191,7 @@ public class FundsTransferOutSide {
             transactionInfoDAO.update(transactionInfo.getTransactionId(), params);
         } catch (Exception e) {
             log.error("{}#Failed to update transaction {} to database:{}", location, transactionInfo, e.getMessage());
-            error = getErrorUtils.getError("501", new String[]{e.getMessage()});
+            error = getErrorUtils.getError("502", new String[]{e.getMessage()});
             response.setError(error);
             return response;
         }
@@ -229,6 +229,7 @@ public class FundsTransferOutSide {
             return response;
         }
 
+        // build success body
         ApiBody body = new ApiBody();
         HashMap<String, Object> responseTransaction = new HashMap<>();
         responseTransaction.put("responseCode", "00");

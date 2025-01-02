@@ -8,7 +8,12 @@ import com.kaiasia.app.register.Register;
 import com.kaiasia.app.service.fundstransfer.configuration.DepApiConfig;
 import com.kaiasia.app.service.fundstransfer.configuration.DepApiProperties;
 import com.kaiasia.app.service.fundstransfer.configuration.KaiApiRequestBuilderFactory;
-import com.kaiasia.app.service.fundstransfer.model.*;
+import com.kaiasia.app.service.fundstransfer.model.reponse.Auth1Out;
+import com.kaiasia.app.service.fundstransfer.model.reponse.Auth3Out;
+import com.kaiasia.app.service.fundstransfer.model.reponse.FundsTransferOut;
+import com.kaiasia.app.service.fundstransfer.model.request.Auth1In;
+import com.kaiasia.app.service.fundstransfer.model.request.Auth3In;
+import com.kaiasia.app.service.fundstransfer.model.request.FundsTransferIn;
 import com.kaiasia.app.service.fundstransfer.utils.ApiCallHelper;
 import com.kaiasia.app.service.fundstransfer.utils.ObjectAndJsonUtils;
 import com.kaiasia.app.service.fundstransfer.utils.ServiceUtils;
@@ -18,7 +23,6 @@ import org.springframework.http.HttpMethod;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 
 @KaiService
 @Slf4j
