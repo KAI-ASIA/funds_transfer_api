@@ -24,6 +24,7 @@ kai:
     code502: "Failed to update to the database#{0}"
     code503: "Failed to read from the database#{0}"
     code504: "Failed to delete from the database#{0}"
+    code505: "Failed to call api#{0}"
     code333: "Don't have method validate for AuthenType"
 spring:
   application:

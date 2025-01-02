@@ -3,6 +3,8 @@ package com.kaiasia.app.service.fundstransfer.utils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.kaiasia.app.service.fundstransfer.exception.ExceptionHandler;
+import com.kaiasia.app.service.fundstransfer.exception.MapperException;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -18,15 +20,23 @@ public class ObjectAndJsonUtils {
         return writer;
     }
 
-    public static <T> T fromJson(String json, Class<T> clazz) throws JsonProcessingException {
-        return mapper.readValue(json, clazz);
+    public static <T> T fromJson(String json, Class<T> clazz)  {
+        try {
+            return mapper.readValue(json, clazz);
+        } catch (JsonProcessingException e) {
+            throw ExceptionHandler.transformException(e, MapperException.class);
+        }
     }
 
-    public static <T> T fromObject(Object object, Class<T> clazz) throws IllegalArgumentException {
+    public static <T> T fromObject(Object object, Class<T> clazz)  {
         return mapper.convertValue(object, clazz);
     }
 
-    public static String toJson(Object obj) throws JsonProcessingException {
-        return writer.writeValueAsString(obj);
+    public static String toJson(Object obj)  {
+        try {
+            return writer.writeValueAsString(obj);
+        } catch (JsonProcessingException e) {
+            throw ExceptionHandler.transformException(e, MapperException.class);
+        }
     }
 }
