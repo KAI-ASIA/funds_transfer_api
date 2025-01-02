@@ -1,6 +1,5 @@
 package com.kaiasia.app.service.fundstransfer.service;
 
-import com.fasterxml.jackson.core.JacksonException;
 import com.kaiasia.app.core.model.*;
 import com.kaiasia.app.core.utils.GetErrorUtils;
 import com.kaiasia.app.register.KaiMethod;
