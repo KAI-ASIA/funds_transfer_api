@@ -16,6 +16,7 @@ import java.net.URI;
  * @param <T> Kiểu dữ liệu của phản hồi từ API.
  */
 @Slf4j
+@Deprecated
 public class ApiCallHelper<T> {
     // URL của API endpoint
     private String url;

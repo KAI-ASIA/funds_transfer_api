@@ -21,26 +21,30 @@ import com.kaiasia.app.service.fundstransfer.utils.ApiCallHelper;
 import com.kaiasia.app.service.fundstransfer.utils.ObjectAndJsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Random;
 
 @KaiService
 @Slf4j
 public class FundsTransferOutSide {
-    @Autowired
-    private GetErrorUtils getErrorUtils;
-    @Autowired
-    private DepApiConfig depApiConfig;
-    @Autowired
-    private KaiApiRequestBuilderFactory kaiApiRequestBuilderFactory;
-    @Autowired
-    private ITransactionInfoDAO transactionInfoDAO;
-    @Autowired
-    private ExceptionHandler exceptionHandler;
+    private final GetErrorUtils getErrorUtils;
+    private final DepApiConfig depApiConfig;
+    private final KaiApiRequestBuilderFactory kaiApiRequestBuilderFactory;
+    private final ITransactionInfoDAO transactionInfoDAO;
+    private final ExceptionHandler exceptionHandler;
+
+    public FundsTransferOutSide(GetErrorUtils getErrorUtils, DepApiConfig depApiConfig, KaiApiRequestBuilderFactory kaiApiRequestBuilderFactory, ITransactionInfoDAO transactionInfoDAO, ExceptionHandler exceptionHandler) {
+        this.getErrorUtils = getErrorUtils;
+        this.depApiConfig = depApiConfig;
+        this.kaiApiRequestBuilderFactory = kaiApiRequestBuilderFactory;
+        this.transactionInfoDAO = transactionInfoDAO;
+        this.exceptionHandler = exceptionHandler;
+    }
+
 
     @KaiMethod(name = "FundsTransferOutSide", type = Register.VALIDATE)
     public ApiError validate(ApiRequest request) {
@@ -140,7 +144,7 @@ public class FundsTransferOutSide {
 
             //Call T2405 - Funds transfer logic
             DepApiProperties t24utilsApiProperties = depApiConfig.getT24utilsApi();
-            FundsTransferIn t2405RequestTransaction = FundsTransferIn.builder().authenType("fundTransfer")
+            FundsTransferIn t2405RequestTransaction = FundsTransferIn.builder().authenType("KAI.API.FT.PROCESS")
                     .transactionId((String) requestTransaction.get("transactionId"))
                     .debitAccount((String) requestTransaction.get("debitAccount"))
                     .creditAccount((String) requestTransaction.get("creditAccount"))
@@ -166,7 +170,7 @@ public class FundsTransferOutSide {
             HashMap t2405ResponseTransaction = (HashMap) t2405Response.getBody().get("transaction");
             HashMap<String, Object> params = new HashMap();
             params.put("response_code", t2405ResponseTransaction.get("responseCode"));
-            params.put("bank_trans_id", t2405ResponseTransaction.get("FT"));
+            params.put("bank_trans_id", t2405ResponseTransaction.get("transactionNo"));
             params.put("last_update", new Date());
 
             try {
@@ -180,7 +184,7 @@ public class FundsTransferOutSide {
             Napas2In napas2RequestTransaction = Napas2In.builder().authenType("getTransFastAcc")
                     .senderAccount((String) requestTransaction.get("debitAccount"))// chua ro rang du lieu
                     .amount((String) requestTransaction.get("transAmount")).ccy("VND")
-                    .transRef((String) t2405ResponseTransaction.get("FT"))
+                    .transRef((String) t2405ResponseTransaction.get("transactionNo"))
                     .benAcc((String) requestTransaction.get("creditAccount"))// chua ro rang du lieu
                     .bankId((String) requestTransaction.get("bankId"))
                     .transContent((String) requestTransaction.get("transContent"))
@@ -204,7 +208,7 @@ public class FundsTransferOutSide {
             ApiBody body = new ApiBody();
             HashMap<String, Object> responseTransaction = new HashMap<>();
             responseTransaction.put("responseCode", "00");
-            responseTransaction.put("transactionNO", t2405ResponseTransaction.get("FT"));
+            responseTransaction.put("transactionNO", t2405ResponseTransaction.get("transactionNo"));
             responseTransaction.put("napasRef", ((HashMap) napas2Response.getBody().get("transaction")).get("napasRef"));
             body.put("transaction", responseTransaction);
             response.setBody(body);
