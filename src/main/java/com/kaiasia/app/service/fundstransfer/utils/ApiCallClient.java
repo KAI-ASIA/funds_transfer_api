@@ -5,15 +5,20 @@ import com.kaiasia.app.core.utils.ApiConstant;
 import com.kaiasia.app.service.fundstransfer.configuration.KaiRestTemplate;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+import java.util.Map;
+
 
 @Component
 @Slf4j
 @Setter
+@ToString
 public class ApiCallClient {
     @Autowired
     private KaiRestTemplate kaiRestTemplate;
@@ -21,6 +26,7 @@ public class ApiCallClient {
     private String apiKey;
     private String apiName;
     private int timeout;
+    private Map<String, String> authenType;
 
     public <T> T call(String location, ApiRequest request, Class<T> responseType) {
         request.setHeader(rebuildHeader(request.getHeader()));

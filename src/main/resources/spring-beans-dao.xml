@@ -20,10 +20,11 @@
 		<property name="apiResponseDAO" ref="apiResponseDAO" />
 	</bean>
 
-	<bean id="t24UtilsApiCallClient" class="com.kaiasia.app.service.fundstransfer.utils.T24UtilsApiCallClient">
-		<property name="url" value="${dep-api.t24utilsApi.url}" />
-		<property name="apiKey" value="${dep-api.t24utilsApi.apiKey}" />
-		<property name="apiName" value="${dep-api.t24utilsApi.apiName}" />
-		<property name="timeout" value="${dep-api.t24utilsApi.timeout}" />
-	</bean>
+<!--	<bean id="t24UtilsApiCallClient" class="com.kaiasia.app.service.fundstransfer.utils.T24UtilsApiCallClient">-->
+<!--		<property name="url" value="${dep-api.t24utils-api.url}" />-->
+<!--		<property name="apiKey" value="${dep-api.t24utils-api.apiKey}" />-->
+<!--		<property name="apiName" value="${dep-api.t24utils-api.apiName}" />-->
+<!--		<property name="timeout" value="${dep-api.t24utils-api.timeout}" />-->
+<!--		<property name="authenType" value="#{{'login': '${dep-api.t24utils-api.authenType.login}', 'fundtransfer': '${dep-api.t24utils-api.authenType.fundtransfer}'}}"/>-->
+<!--	</bean>-->
 </beans>
