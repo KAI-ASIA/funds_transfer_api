@@ -3,6 +3,7 @@ package com.kaiasia.app.service.fundstransfer.model.response;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.kaiasia.app.service.fundstransfer.model.validation.SuccessGroup;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import javax.validation.constraints.NotBlank;
 
@@ -13,7 +14,7 @@ import javax.validation.constraints.NotBlank;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@SuperBuilder
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Auth1Out extends BaseResponse {
     @NotBlank(message = "SessionId is required", groups = SuccessGroup.class)
