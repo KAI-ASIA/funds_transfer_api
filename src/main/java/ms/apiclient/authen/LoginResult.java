@@ -1,10 +1,10 @@
-package ms.apiclient.app.service.t24util;
+package ms.apiclient.authen;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import ms.apiclient.app.core.model.ApiError;
 
 import lombok.Getter;
 import lombok.Setter;
+import ms.apiclient.model.ApiError;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Getter

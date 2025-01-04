@@ -1,8 +1,8 @@
-package ms.apiclient.app.service.t24util;
+package ms.apiclient.t24util;
 
-import ms.apiclient.app.core.model.ApiHeader;
-import ms.apiclient.app.core.model.ApiRequest;
 import ms.apiclient.client.common.CallApiHelper;
+import ms.apiclient.model.ApiHeader;
+import ms.apiclient.model.ApiRequest;
 
 public class T24UtilClient extends CallApiHelper{
 

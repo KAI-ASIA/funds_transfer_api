@@ -1,4 +1,4 @@
-package ms.apiclient.app.service.authen;
+package ms.apiclient.authen;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 

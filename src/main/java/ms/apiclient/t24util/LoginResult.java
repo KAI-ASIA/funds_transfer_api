@@ -1,18 +1,17 @@
-package ms.apiclient.app.service.t24util;
+package ms.apiclient.t24util;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import ms.apiclient.app.core.model.ApiError;
 
 import lombok.Getter;
 import lombok.Setter;
+import ms.apiclient.model.ApiError;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Getter
 @Setter
-public class CustomerResult {
-	private String id;
-	private String cifName;
-	private String legalId;
+public class LoginResult {
+	private String packageUser;
+	private String phone;
 	private ApiError error;
 	/*
 	 * todo

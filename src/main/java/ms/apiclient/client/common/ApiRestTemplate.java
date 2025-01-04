@@ -10,8 +10,8 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import ms.apiclient.app.core.model.ApiRequest;
-import ms.apiclient.app.core.model.ApiResponse;
+import ms.apiclient.model.ApiRequest;
+import ms.apiclient.model.ApiResponse;
 
 
 @Component

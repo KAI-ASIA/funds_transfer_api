@@ -1,4 +1,4 @@
-package ms.apiclient.app.service.t24util;
+package ms.apiclient.t24util;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 

@@ -1,4 +1,4 @@
-package ms.apiclient.app.core.model;
+package ms.apiclient.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;

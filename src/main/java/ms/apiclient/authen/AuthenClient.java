@@ -1,11 +1,11 @@
-package ms.apiclient.app.service.authen;
+package ms.apiclient.authen;
 
 import ms.apiclient.client.common.CallApiHelper;
+import ms.apiclient.model.ApiHeader;
+import ms.apiclient.model.ApiRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import ms.apiclient.app.core.model.ApiHeader;
-import ms.apiclient.app.core.model.ApiRequest;
 
 @Component
 public class AuthenClient extends ms.apiclient.client.common.CallApiHelper {

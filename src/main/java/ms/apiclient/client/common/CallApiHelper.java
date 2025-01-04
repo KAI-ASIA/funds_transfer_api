@@ -6,11 +6,11 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import ms.apiclient.app.core.model.ApiBody;
-import ms.apiclient.app.core.model.ApiError;
-import ms.apiclient.app.core.model.ApiHeader;
-import ms.apiclient.app.core.model.ApiRequest;
-import ms.apiclient.app.core.model.ApiResponse;
+import ms.apiclient.model.ApiBody;
+import ms.apiclient.model.ApiError;
+import ms.apiclient.model.ApiHeader;
+import ms.apiclient.model.ApiRequest;
+import ms.apiclient.model.ApiResponse;
 
 @Component
 public abstract class CallApiHelper {

@@ -1,4 +1,4 @@
-package ms.apiclient.app.core.model;
+package ms.apiclient.model;
 
 import java.util.TreeMap;
 
