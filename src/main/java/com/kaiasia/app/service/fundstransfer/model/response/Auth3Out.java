@@ -1,4 +1,4 @@
-package com.kaiasia.app.service.fundstransfer.model.reponse;
+package com.kaiasia.app.service.fundstransfer.model.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
@@ -14,10 +14,7 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Auth3Out {
-    @NotBlank(message = "Response code is required")
-    private String responseCode;
-
+public class Auth3Out extends BaseResponse{
     @NotBlank(message = "TransactionId is required")
     private String transId;
 }

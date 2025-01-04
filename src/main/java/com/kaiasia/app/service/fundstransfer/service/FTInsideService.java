@@ -23,33 +23,23 @@ import com.kaiasia.app.service.fundstransfer.model.request.FundsTransferIn;
 import com.kaiasia.app.service.fundstransfer.utils.ApiCallHelper;
 import com.kaiasia.app.service.fundstransfer.utils.ObjectAndJsonUtils;
 import com.kaiasia.app.service.fundstransfer.utils.ServiceUtils;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 
 @KaiService
 @Slf4j
+@RequiredArgsConstructor
 public class FTInsideService {
-
-    @Autowired
-    GetErrorUtils apiErrorUtils;
-
-    @Autowired
-    private DepApiConfig depApiConfig;
-
-    @Autowired
-    private KaiApiRequestBuilderFactory kaiApiRequestBuilderFactory;
-
-    @Autowired
-    private ITransactionInfoDAO transactionInfoDAO;
-
-    @Autowired
-    private ExceptionHandler exceptionHandler;
+    private final GetErrorUtils apiErrorUtils;
+    private final DepApiConfig depApiConfig;
+    private final KaiApiRequestBuilderFactory kaiApiRequestBuilderFactory;
+    private final ITransactionInfoDAO transactionInfoDAO;
+    private final ExceptionHandler exceptionHandler;
 
     @KaiMethod(name = "FTInsideService", type = Register.VALIDATE)
     public ApiError validate(ApiRequest req) {
@@ -57,7 +47,7 @@ public class FTInsideService {
     }
 
     @KaiMethod(name = "FTInsideService")
-    public ApiResponse process(ApiRequest req) throws ParseException {
+    public ApiResponse process(ApiRequest req) throws Exception {
         FundsTransferIn requestData = ObjectAndJsonUtils.fromObject(req
                 .getBody()
                 .get("transaction"), FundsTransferIn.class);
@@ -84,7 +74,11 @@ public class FTInsideService {
 
             String username = null;
 
-            ApiResponse auth1Response = ApiCallHelper.call(authApiProperties.getUrl(), HttpMethod.POST, ObjectAndJsonUtils.toJson(auth1Request), ApiResponse.class, authApiProperties.getTimeout());
+            ApiResponse auth1Response = ApiCallHelper.call(authApiProperties.getUrl(),
+                    HttpMethod.POST,
+                    ObjectAndJsonUtils.toJson(auth1Request),
+                    ApiResponse.class,
+                    authApiProperties.getTimeout());
             error = auth1Response.getError();
             if (error != null || !"OK".equals(auth1Response.getBody().get("status"))) {
                 log.error("{}:{}", location + "#After call Auth-1", error);
