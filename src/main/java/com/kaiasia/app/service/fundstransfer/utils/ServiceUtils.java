@@ -22,6 +22,8 @@ public class ServiceUtils {
      * @param apiErrorUtils Tiện ích để tạo thông báo lỗi.
      * @param transOrEnquiry Phần trong nội dung yêu cầu cần kiểm tra, ví dụ: "TRANSACTION" hoặc "ENQUIRY".
      * @return Trả về đối tượng ApiError, chứa mã lỗi và mô tả lỗi nếu không hợp lệ; ngược lại trả về mã OK nếu hợp lệ.
+     * @since 1.0
+     * @author Phạm Huy Hoàng
      */
     public static <T> ApiError validate(ApiRequest req, Class<T> clazz, GetErrorUtils apiErrorUtils, String transOrEnquiry) {
         try {
@@ -60,6 +62,8 @@ public class ServiceUtils {
      * @param apiErrorUtils Tiện ích để tạo thông báo lỗi.
      * @param transOrEnquiry Phần trong nội dung phản hồi cần kiểm tra, ví dụ: "TRANSACTION" hoặc "ENQUIRY".
      * @return Trả về đối tượng ApiError, chứa mã lỗi và mô tả lỗi nếu không hợp lệ; ngược lại trả về mã OK nếu hợp lệ.
+     * @since 1.0
+     * @author Phạm Huy Hoàng
      */
     public static <T> ApiError validate(ApiResponse req, Class<T> clazz, GetErrorUtils apiErrorUtils, String transOrEnquiry) {
         try {
