@@ -1,4 +1,4 @@
-package com.kaiasia.client.t24util.common;
+package com.kaiasia.client.common;
 
 import java.util.Collections;
 

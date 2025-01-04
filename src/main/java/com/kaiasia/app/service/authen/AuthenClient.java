@@ -5,15 +5,13 @@ import org.springframework.stereotype.Component;
 
 import com.kaiasia.app.core.model.ApiHeader;
 import com.kaiasia.app.core.model.ApiRequest;
-import com.kaiasia.client.t24util.common.CallApiHelper;
+import com.kaiasia.client.common.CallApiHelper;
 
-
+@Component
 public class AuthenClient extends CallApiHelper{
 	
 	@Autowired
 	private CallApiHelper CallApiHelper;
-	
-	
 	
 	public LoginResult login(String location, AuthRequest t24request, ApiHeader header){
 		ApiRequest apiReq = buildENQUIRY(t24request, header);
