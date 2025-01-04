@@ -21,6 +21,13 @@ public class ExceptionHandler {
     @Autowired
     private GetErrorUtils getErrorUtils;
 
+    /**
+     *
+     * @param process hàm logic xử lý mà ta muốn ủy quyền lại cho {@link ExceptionHandler}
+     * @param apiRequest tham số mà hàm <b>process</b> cần
+     * @param location vị trí để thực thi ghi log lỗi
+     * @return trả về response tương ứng vứi hàm process trả về
+     */
     public ApiResponse handle(Function<ApiRequest, ApiResponse> process, ApiRequest apiRequest, String location) {
         ApiResponse response;
         try {

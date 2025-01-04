@@ -28,8 +28,8 @@ public class ObjectAndJsonUtils {
         }
     }
 
-    public static <T> T fromObject(Object object, Class<T> clazz)  {
-        return mapper.convertValue(object, clazz);
+    public static <T> T fromObject(Object from, Class<T> to)  {
+        return mapper.convertValue(from, to);
     }
 
     public static String toJson(Object obj)  {

@@ -57,9 +57,9 @@ dep-api:
     apiKey: authq51klfoni1ezxl5f2ckpfx248
   t24utilsApi:
     apiName: T24UTILS_API
-    url: http://localhost:8025/T24UTILS_API/process
+    url: http://14.225.254.212:8082/T24_UTIL_API/process
     timeout: 60000
-    apiKey: T24utils51klfoni1ezxl5f2ckpfx248
+    apiKey: VDI0X1VUSUxfQVBJ
   napasApi:
     apiName: NAPAS_API
     url: http://localhost:8025/NAPAS_API/process
