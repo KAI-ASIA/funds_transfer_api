@@ -4,7 +4,8 @@ import com.kaiasia.app.core.model.ApiRequest;
 import com.kaiasia.app.service.fundstransfer.model.reponse.FundsTransferOut;
 
 public class T24UtilsApiCallClient extends ApiCallClient {
-    public FundsTransferOut callFundTransfer(String location,ApiRequest request){
+	
+    public FundsTransferOut callFundTransfer(String location, ApiRequest request){
         return this.call(location,request,FundsTransferOut.class);
     }
 }

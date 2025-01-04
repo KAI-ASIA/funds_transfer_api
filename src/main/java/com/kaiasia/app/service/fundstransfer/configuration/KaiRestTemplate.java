@@ -16,8 +16,8 @@ import java.util.Collections;
 
 @Component
 public class KaiRestTemplate {
-    @Autowired
-    private RestTemplateBuilder builder;
+//    @Autowired
+//    private RestTemplateBuilder builder;
 
     public ApiResponse call(String url, ApiRequest request, int timeout) {
         HttpHeaders headers = new HttpHeaders();
