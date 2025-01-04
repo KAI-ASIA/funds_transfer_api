@@ -1,12 +1,10 @@
 package com.kaiasia.app.service.fundstransfer.utils;
 
-import com.kaiasia.app.core.model.ApiBody;
-import com.kaiasia.app.core.model.ApiError;
-import com.kaiasia.app.core.model.ApiRequest;
-import com.kaiasia.app.core.model.ApiResponse;
+import com.kaiasia.app.core.model.*;
 import com.kaiasia.app.core.utils.ApiConstant;
 import com.kaiasia.app.service.fundstransfer.configuration.KaiRestTemplate;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
+@Setter
 public class ApiCallClient {
     @Autowired
     private KaiRestTemplate kaiRestTemplate;
@@ -24,6 +23,7 @@ public class ApiCallClient {
     private int timeout;
 
     public <T> T call(String location, ApiRequest request, Class<T> responseType) {
+        request.setHeader(rebuildHeader(request.getHeader()));
         log.info("{}#begin call api {}", location, apiName);
         ApiResponse response = kaiRestTemplate.call(url, request, timeout);
         log.info("{}#end call api {}", location, apiName);
@@ -39,5 +39,11 @@ public class ApiCallClient {
             return ObjectAndJsonUtils.fromJson((String) body.get(ApiConstant.COMMAND.TRANSACTION), responseType);
         }
         return ObjectAndJsonUtils.fromJson((String) body.get(ApiConstant.COMMAND.ENQUIRY), responseType);
+    }
+
+    private ApiHeader rebuildHeader(ApiHeader header) {
+        header.setApi(apiName);
+        header.setApiKey(apiKey);
+        return header;
     }
 }

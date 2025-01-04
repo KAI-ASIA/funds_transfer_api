@@ -26,7 +26,6 @@ import org.springframework.http.HttpMethod;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Random;
 
 @KaiService
 @Slf4j
