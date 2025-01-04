@@ -19,6 +19,9 @@ import com.kaiasia.app.service.fundstransfer.model.request.FundsTransferIn;
 import com.kaiasia.app.service.fundstransfer.model.request.Napas2In;
 import com.kaiasia.app.service.fundstransfer.utils.ApiCallHelper;
 import com.kaiasia.app.service.fundstransfer.utils.ObjectAndJsonUtils;
+import com.kaiasia.app.service.t24util.LoginResult;
+import com.kaiasia.app.service.t24util.T24Request;
+import com.kaiasia.app.service.t24util.T24UtilClient;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpMethod;
@@ -35,13 +38,15 @@ public class FundsTransferOutSide {
     private final KaiApiRequestBuilderFactory kaiApiRequestBuilderFactory;
     private final ITransactionInfoDAO transactionInfoDAO;
     private final ExceptionHandler exceptionHandler;
-
-    public FundsTransferOutSide(GetErrorUtils getErrorUtils, DepApiConfig depApiConfig, KaiApiRequestBuilderFactory kaiApiRequestBuilderFactory, ITransactionInfoDAO transactionInfoDAO, ExceptionHandler exceptionHandler) {
+    private final T24UtilClient t24UtilClient;
+    public FundsTransferOutSide(GetErrorUtils getErrorUtils, DepApiConfig depApiConfig, KaiApiRequestBuilderFactory kaiApiRequestBuilderFactory, ITransactionInfoDAO transactionInfoDAO, ExceptionHandler exceptionHandler
+    , T24UtilClient t24UtilClient) {
         this.getErrorUtils = getErrorUtils;
         this.depApiConfig = depApiConfig;
         this.kaiApiRequestBuilderFactory = kaiApiRequestBuilderFactory;
         this.transactionInfoDAO = transactionInfoDAO;
         this.exceptionHandler = exceptionHandler;
+        this.t24UtilClient = t24UtilClient;
     }
 
 
@@ -76,6 +81,18 @@ public class FundsTransferOutSide {
     public ApiResponse process(ApiRequest request) {
         HashMap requestTransaction = (HashMap) request.getBody().get("transaction");
         String location = "FundsTransferOutSide/" + requestTransaction.get("sessionId") + "/" + System.currentTimeMillis();
+
+        T24Request t24Request = new T24Request();
+        t24Request.setUsername("28169200");
+        t24Request.setPassword("Phaivu@123");
+        LoginResult loginResult = t24UtilClient.login(location,t24Request,request.getHeader());
+        if(loginResult.getError() != null){
+            System.out.println(loginResult.getError().getCode());
+            System.out.println(loginResult.getError().getDesc());
+        }else {
+            System.out.println(loginResult.getPhone());
+        }
+        System.out.println(loginResult);
         return exceptionHandler.handle(req -> {
             ApiResponse response = new ApiResponse();
             ApiError error;

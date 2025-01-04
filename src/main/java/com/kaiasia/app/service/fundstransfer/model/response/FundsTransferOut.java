@@ -1,8 +1,9 @@
-package com.kaiasia.app.service.fundstransfer.model.reponse;
+package com.kaiasia.app.service.fundstransfer.model.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import javax.validation.constraints.NotBlank;
 
@@ -11,19 +12,13 @@ import javax.validation.constraints.NotBlank;
  */
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@SuperBuilder
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
-public class FundsTransferOut {
-    @NotBlank(message = "Response code is required")
-    private String responseCode;
-
+public class FundsTransferOut extends BaseResponse{
     @NotBlank(message = "FT is required")
     @JsonProperty("FT")
     private String transactionNO;
 
     private String napasRef;
-
-    private String code;
-    private String desc;
 }
