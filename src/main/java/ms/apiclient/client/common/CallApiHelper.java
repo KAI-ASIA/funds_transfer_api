@@ -1,4 +1,4 @@
-package com.kaiasia.client.common;
+package ms.apiclient.client.common;
 
 import java.util.Map;
 
@@ -6,45 +6,21 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.kaiasia.app.core.model.ApiBody;
-import com.kaiasia.app.core.model.ApiError;
-import com.kaiasia.app.core.model.ApiHeader;
-import com.kaiasia.app.core.model.ApiRequest;
-import com.kaiasia.app.core.model.ApiResponse;
-
+import ms.apiclient.app.core.model.ApiBody;
+import ms.apiclient.app.core.model.ApiError;
+import ms.apiclient.app.core.model.ApiHeader;
+import ms.apiclient.app.core.model.ApiRequest;
+import ms.apiclient.app.core.model.ApiResponse;
 
 @Component
-public class CallApiHelper {
-
-
-    public static <T> ApiRequest buildENQUIRY(T enquiryInput, ApiHeader header) {
-        ApiRequest apiReq = new ApiRequest();
-        apiReq.setHeader(header);
-        ApiBody apiBody = new ApiBody();
-        apiBody.put("COMMAND", "GET_ENQUIRY");
-        apiBody.put("ENQUIRY", enquiryInput);
-        apiReq.setBody(apiBody);
-        return apiReq;
-    }
-
-
-    public static <T> ApiRequest buildTransaction(T transactionInput, ApiHeader header) {
-        ApiRequest apiReq = new ApiRequest();
-        apiReq.setHeader(header);
-        ApiBody apiBody = new ApiBody();
-        apiBody.put("COMMAND", "GET_TRANSACTION");
-        apiBody.put("TRANSACTION", transactionInput);
-        apiReq.setBody(apiBody);
-        return apiReq;
-    }
+public abstract class CallApiHelper {
+    @Autowired
+    private ApiRestTemplate apiRestTemplate;
 
     private String url;
     private String apiName;
     private String apiKey;
     private int apiTimeout;
-
-    @Autowired
-    private KaiRestTemplate kaiRestTemplate;
 
     public Map<String, Object> getTransaction(ApiResponse response) {
         return (Map<String, Object>) response.getBody().get("transaction");
@@ -62,7 +38,7 @@ public class CallApiHelper {
             ApiRequest apiReqRebuild = new ApiRequest();
             apiReqRebuild.setHeader(headerApi);
             apiReqRebuild.setBody(apiReq.getBody());
-            ApiResponse response = kaiRestTemplate.callApi(apiReqRebuild, url, apiTimeout);
+            ApiResponse response = apiRestTemplate.callApi(apiReqRebuild, url, apiTimeout);
             if (response != null && response.getError() != null) {
                 apiError = response.getError();
                 ModelMapper mapper = new ModelMapper();
@@ -98,6 +74,26 @@ public class CallApiHelper {
         return headerApi;
     }
 
+    public static <T> ApiRequest buildENQUIRY(T enquiryInput, ApiHeader header) {
+        ApiRequest apiReq = new ApiRequest();
+        apiReq.setHeader(header);
+        ApiBody apiBody = new ApiBody();
+        apiBody.put("COMMAND", "GET_ENQUIRY");
+        apiBody.put("ENQUIRY", enquiryInput);
+        apiReq.setBody(apiBody);
+        return apiReq;
+    }
+
+
+    public static <T> ApiRequest buildTransaction(T transactionInput, ApiHeader header) {
+        ApiRequest apiReq = new ApiRequest();
+        apiReq.setHeader(header);
+        ApiBody apiBody = new ApiBody();
+        apiBody.put("COMMAND", "GET_TRANSACTION");
+        apiBody.put("TRANSACTION", transactionInput);
+        apiReq.setBody(apiBody);
+        return apiReq;
+    }
 
     public String getUrl() {
         return url;

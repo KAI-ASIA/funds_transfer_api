@@ -1,4 +1,4 @@
-package com.kaiasia.client.common;
+package ms.apiclient.client.common;
 
 import java.util.Collections;
 
@@ -10,19 +10,13 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import com.kaiasia.app.core.model.ApiRequest;
-import com.kaiasia.app.core.model.ApiResponse;
-
-
+import ms.apiclient.app.core.model.ApiRequest;
+import ms.apiclient.app.core.model.ApiResponse;
 
 
 @Component
-public class KaiRestTemplate {
-	 
-	
-	
-	
-	 
+public class ApiRestTemplate {
+
 	 public ApiResponse callApi(ApiRequest apiReq, String url, int apiTimeout) throws Exception {
 		 RestTemplate  restTemplate = new RestTemplate();
 		 HttpComponentsClientHttpRequestFactory clientHttpRequestFactory = new HttpComponentsClientHttpRequestFactory();

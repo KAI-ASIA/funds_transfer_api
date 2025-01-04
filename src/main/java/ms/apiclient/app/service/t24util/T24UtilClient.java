@@ -1,8 +1,8 @@
-package com.kaiasia.app.service.t24util;
+package ms.apiclient.app.service.t24util;
 
-import com.kaiasia.app.core.model.ApiHeader;
-import com.kaiasia.app.core.model.ApiRequest;
-import com.kaiasia.client.common.CallApiHelper;
+import ms.apiclient.app.core.model.ApiHeader;
+import ms.apiclient.app.core.model.ApiRequest;
+import ms.apiclient.client.common.CallApiHelper;
 
 public class T24UtilClient extends CallApiHelper{
 

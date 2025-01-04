@@ -8,9 +8,9 @@
         <version>2.7.2</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.kaiasia.client</groupId>
+    <groupId>ms.kaiasia.client</groupId>
     <artifactId>kai-client</artifactId>
-    <version>20241209</version>
+    <version>20250104</version>
     <name>app</name>
     <description>Common Framework for KaiAsia</description>
     <properties>

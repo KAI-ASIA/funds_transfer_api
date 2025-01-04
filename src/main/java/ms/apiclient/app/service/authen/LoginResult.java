@@ -1,7 +1,7 @@
-package com.kaiasia.app.service.t24util;
+package ms.apiclient.app.service.authen;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.kaiasia.app.core.model.ApiError;
+import ms.apiclient.app.core.model.ApiError;
 
 import lombok.Getter;
 import lombok.Setter;

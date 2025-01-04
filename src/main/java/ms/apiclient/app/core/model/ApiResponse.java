@@ -1,4 +1,4 @@
-package com.kaiasia.app.core.model;
+package ms.apiclient.app.core.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;

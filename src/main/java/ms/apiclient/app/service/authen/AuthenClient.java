@@ -1,14 +1,14 @@
-package com.kaiasia.app.service.authen;
+package ms.apiclient.app.service.authen;
 
+import ms.apiclient.client.common.CallApiHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.kaiasia.app.core.model.ApiHeader;
-import com.kaiasia.app.core.model.ApiRequest;
-import com.kaiasia.client.common.CallApiHelper;
+import ms.apiclient.app.core.model.ApiHeader;
+import ms.apiclient.app.core.model.ApiRequest;
 
 @Component
-public class AuthenClient extends CallApiHelper{
+public class AuthenClient extends ms.apiclient.client.common.CallApiHelper {
 	
 	@Autowired
 	private CallApiHelper CallApiHelper;
