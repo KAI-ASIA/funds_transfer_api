@@ -14,12 +14,14 @@ import com.kaiasia.app.service.fundstransfer.exception.ExceptionHandler;
 import com.kaiasia.app.service.fundstransfer.exception.InsertFailedException;
 import com.kaiasia.app.service.fundstransfer.exception.UpdateFailedException;
 import com.kaiasia.app.service.fundstransfer.model.*;
-import com.kaiasia.app.service.fundstransfer.model.reponse.Auth1Out;
-import com.kaiasia.app.service.fundstransfer.model.reponse.Auth3Out;
-import com.kaiasia.app.service.fundstransfer.model.reponse.FundsTransferOut;
+import com.kaiasia.app.service.fundstransfer.model.response.Auth1Out;
+import com.kaiasia.app.service.fundstransfer.model.response.Auth3Out;
+import com.kaiasia.app.service.fundstransfer.model.response.FundsTransferOut;
 import com.kaiasia.app.service.fundstransfer.model.request.Auth1In;
 import com.kaiasia.app.service.fundstransfer.model.request.Auth3In;
 import com.kaiasia.app.service.fundstransfer.model.request.FundsTransferIn;
+import com.kaiasia.app.service.fundstransfer.model.validation.FundsTransferOptional;
+import com.kaiasia.app.service.fundstransfer.model.validation.SuccessGroup;
 import com.kaiasia.app.service.fundstransfer.utils.ApiCallHelper;
 import com.kaiasia.app.service.fundstransfer.utils.ObjectAndJsonUtils;
 import com.kaiasia.app.service.fundstransfer.utils.ServiceUtils;
@@ -43,7 +45,7 @@ public class FTInsideService {
 
     @KaiMethod(name = "FTInsideService", type = Register.VALIDATE)
     public ApiError validate(ApiRequest req) {
-        return ServiceUtils.validate(req, FundsTransferIn.class, apiErrorUtils, "TRANSACTION");
+        return ServiceUtils.validate(req, FundsTransferIn.class, apiErrorUtils, "TRANSACTION", FundsTransferOptional.class);
     }
 
     @KaiMethod(name = "FTInsideService")
@@ -87,7 +89,7 @@ public class FTInsideService {
             }
 
             // Kiểm tra kết quả trả về đủ field không.
-            ApiError validateAuth1Error = ServiceUtils.validate(auth1Response, Auth1Out.class, apiErrorUtils, "TRANSACTION");
+            ApiError validateAuth1Error = ServiceUtils.validate(auth1Response, Auth1Out.class, apiErrorUtils, "TRANSACTION", SuccessGroup.class);
             if (!validateAuth1Error.getCode().equals(ApiError.OK_CODE)) {
                 log.error("{}:{}", location + "#After call Auth-1", validateAuth1Error);
                 response.setError(validateAuth1Error);

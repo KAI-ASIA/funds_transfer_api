@@ -10,17 +10,19 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Map;
 
 @Component
 @Slf4j
 @Setter
 public class ApiCallClient {
     @Autowired
-    private KaiRestTemplate kaiRestTemplate;
-    private String url;
-    private String apiKey;
-    private String apiName;
-    private int timeout;
+    protected KaiRestTemplate kaiRestTemplate;
+    protected String url;
+    protected String apiKey;
+    protected String apiName;
+    protected int timeout;
+    protected Map<String, String> authenType;
 
     public <T> T call(String location, ApiRequest request, Class<T> responseType) {
         request.setHeader(rebuildHeader(request.getHeader()));
