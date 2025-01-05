@@ -1,6 +1,6 @@
 package com.kaiasia.app.service.fundstransfer.utils;
 
-import com.kaiasia.app.core.model.ApiRequest;
+import ms.apiclient.model.ApiRequest;
 import com.kaiasia.app.service.fundstransfer.configuration.KaiApiRequestBuilderFactory;
 import com.kaiasia.app.service.fundstransfer.model.request.Auth1In;
 import com.kaiasia.app.service.fundstransfer.model.request.FundsTransferIn;

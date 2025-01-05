@@ -58,6 +58,14 @@ dep-api:
     authenType:
       auth-1: takeSession
       auth-3: confirmOTP
+  t24utils-api:
+    apiName: T24_UTIL_API
+    url: http://14.225.254.212:8082/T24_UTIL_API/process
+    timeout: 60000
+    apiKey: VDI0X1VUSUxfQVBJ
+    authenType:
+      fundtransfer: KAI.API.FT.PROCESS
+      login: KAI.API.GET.LOGIN
   t24utilsApi:
     apiName: T24_UTIL_API
     url: http://14.225.254.212:8082/T24_UTIL_API/process

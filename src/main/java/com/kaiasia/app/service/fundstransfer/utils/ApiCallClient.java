@@ -1,9 +1,8 @@
 package com.kaiasia.app.service.fundstransfer.utils;
 
-import com.kaiasia.app.core.model.*;
+import com.kaiasia.app.service.fundstransfer.configuration.KaiRestTemplate1;
+import ms.apiclient.model.*;
 import com.kaiasia.app.core.utils.ApiConstant;
-import com.kaiasia.app.service.fundstransfer.configuration.KaiRestTemplate;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -17,7 +16,7 @@ import java.util.Map;
 @Setter
 public class ApiCallClient {
     @Autowired
-    protected KaiRestTemplate kaiRestTemplate;
+    protected KaiRestTemplate1 kaiRestTemplate;
     protected String url;
     protected String apiKey;
     protected String apiName;

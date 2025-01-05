@@ -1,6 +1,5 @@
 package com.kaiasia.app.service.fundstransfer.service;
 
-import com.kaiasia.app.core.model.*;
 import com.kaiasia.app.core.utils.ApiConstant;
 import com.kaiasia.app.core.utils.GetErrorUtils;
 import com.kaiasia.app.register.KaiMethod;
@@ -21,12 +20,12 @@ import com.kaiasia.app.service.fundstransfer.model.request.Auth1In;
 import com.kaiasia.app.service.fundstransfer.model.request.Auth3In;
 import com.kaiasia.app.service.fundstransfer.model.request.FundsTransferIn;
 import com.kaiasia.app.service.fundstransfer.model.validation.FundsTransferOptional;
-import com.kaiasia.app.service.fundstransfer.model.validation.SuccessGroup;
 import com.kaiasia.app.service.fundstransfer.utils.ApiCallHelper;
 import com.kaiasia.app.service.fundstransfer.utils.ObjectAndJsonUtils;
 import com.kaiasia.app.service.fundstransfer.utils.ServiceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import ms.apiclient.model.*;
 import org.springframework.http.HttpMethod;
 
 import java.text.SimpleDateFormat;
@@ -89,7 +88,7 @@ public class FTInsideService {
             }
 
             // Kiểm tra kết quả trả về đủ field không.
-            ApiError validateAuth1Error = ServiceUtils.validate(auth1Response, Auth1Out.class, apiErrorUtils, "TRANSACTION", SuccessGroup.class);
+            ApiError validateAuth1Error = ServiceUtils.validate(auth1Response, Auth1Out.class, apiErrorUtils, "TRANSACTION");
             if (!validateAuth1Error.getCode().equals(ApiError.OK_CODE)) {
                 log.error("{}:{}", location + "#After call Auth-1", validateAuth1Error);
                 response.setError(validateAuth1Error);

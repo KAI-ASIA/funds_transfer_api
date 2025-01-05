@@ -1,9 +1,9 @@
 package com.kaiasia.app.service.fundstransfer.model;
 
-import com.kaiasia.app.core.model.ApiBody;
-import com.kaiasia.app.core.model.ApiHeader;
-import com.kaiasia.app.core.model.ApiRequest;
 import com.kaiasia.app.utils.ApiUtils;
+import ms.apiclient.model.ApiBody;
+import ms.apiclient.model.ApiHeader;
+import ms.apiclient.model.ApiRequest;
 
 
 public class KaiApiRequestBuilder {
