@@ -10,14 +10,14 @@ import ms.apiclient.model.ApiError;
 @Getter
 @Setter
 public class AuthLoginResponse {
+	private String transId;
+	private String responseCode;
+	private String sessionId;
 	private String packageUser;
 	private String phone;
 	private String customerID;
 	private String customerName;
 	private String companyCode;
 	private String username;
-	private String responseCode;
-	private String sessionId;
 	private ApiError error;
-
 }

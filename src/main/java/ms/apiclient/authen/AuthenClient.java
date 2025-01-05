@@ -28,10 +28,10 @@ public class AuthenClient extends ApiCallClient {
 	 * @param header - Header của request đầu vào.
 	 * @return Trả về AuthLoginResponse chứa (ResponseCode, SessionId, Username) hoặc 1 ApiError
 	 */
-	public AuthLoginResponse takeSession(String location, AuthRequest authRequest, ApiHeader header){
+	public AuthTakeSessionResponse takeSession(String location, AuthRequest authRequest, ApiHeader header){
 		authRequest.setAuthenType("takeSession");
 		ApiRequest apiReq = buildENQUIRY(authRequest, header);
-		return this.call(location, apiReq, AuthLoginResponse.class);
+		return this.call(location, apiReq, AuthTakeSessionResponse.class);
 	}
 
 	/**
@@ -41,10 +41,10 @@ public class AuthenClient extends ApiCallClient {
 	 * @param header - Header của request đầu vào.
 	 * @return Trả về AuthLoginResponse chứa (ResponseCode, TransId) hoặc 1 ApiError
 	 */
-	public AuthLoginResponse getOTP(String location, AuthRequest authRequest, ApiHeader header){
+	public AuthOTPResponse getOTP(String location, AuthRequest authRequest, ApiHeader header){
 		authRequest.setAuthenType("getOTP");
 		ApiRequest apiReq = buildENQUIRY(authRequest, header);
-		return this.call(location, apiReq, AuthLoginResponse.class);
+		return this.call(location, apiReq, AuthOTPResponse.class);
 	}
 
 
@@ -55,9 +55,9 @@ public class AuthenClient extends ApiCallClient {
 	 * @param header - Header của request đầu vào.
 	 * @return Trả về AuthLoginResponse chứa (ResponseCode, TransId) hoặc 1 ApiError
 	 */
-	public AuthLoginResponse confirmOTP(String location, AuthRequest authRequest, ApiHeader header){
+	public AuthOTPResponse confirmOTP(String location, AuthRequest authRequest, ApiHeader header){
 		authRequest.setAuthenType("confirmOTP");
 		ApiRequest apiReq = buildENQUIRY(authRequest, header);
-		return this.call(location, apiReq, AuthLoginResponse.class);
+		return this.call(location, apiReq, AuthOTPResponse.class);
 	}
 }
