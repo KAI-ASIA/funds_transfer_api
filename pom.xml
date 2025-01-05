@@ -16,6 +16,7 @@
     <description>Funds Transfer Api</description>
     <properties>
         <java.version>1.8</java.version>
+        <start-class>com.kaiasia.app.AppApplication</start-class>
     </properties>
     <dependencies>
         <dependency>
@@ -67,7 +68,7 @@
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.kaiasia.client</groupId>
+            <groupId>ms.kaiasia.client</groupId>
             <artifactId>kai-client</artifactId>
             <version>20250104</version>
         </dependency>

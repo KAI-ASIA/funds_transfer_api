@@ -2,6 +2,10 @@ package com.kaiasia.app.service.fundstransfer.utils;
 
 import com.kaiasia.app.core.model.*;
 import com.kaiasia.app.core.utils.GetErrorUtils;
+import ms.apiclient.model.ApiBody;
+import ms.apiclient.model.ApiError;
+import ms.apiclient.model.ApiRequest;
+import ms.apiclient.model.ApiResponse;
 
 import javax.validation.Validation;
 import javax.validation.Validator;

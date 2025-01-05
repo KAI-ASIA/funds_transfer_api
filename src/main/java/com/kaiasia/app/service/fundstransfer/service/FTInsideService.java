@@ -25,6 +25,7 @@ import com.kaiasia.app.service.fundstransfer.utils.ObjectAndJsonUtils;
 import com.kaiasia.app.service.fundstransfer.utils.ServiceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import ms.apiclient.model.*;
 import org.springframework.http.HttpMethod;
 
 import java.text.SimpleDateFormat;
