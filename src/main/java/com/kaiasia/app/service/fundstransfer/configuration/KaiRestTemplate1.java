@@ -32,4 +32,6 @@ public class KaiRestTemplate1 {
         restTemplate.setRequestFactory(requestFactory);
         return restTemplate;
     }
+
+
 }

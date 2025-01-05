@@ -1,6 +1,5 @@
 package com.kaiasia.app.service.fundstransfer.service;
 
-import com.kaiasia.app.core.model.*;
 import com.kaiasia.app.core.utils.ApiConstant;
 import com.kaiasia.app.core.utils.GetErrorUtils;
 import com.kaiasia.app.register.KaiMethod;
@@ -14,17 +13,19 @@ import com.kaiasia.app.service.fundstransfer.exception.ExceptionHandler;
 import com.kaiasia.app.service.fundstransfer.exception.InsertFailedException;
 import com.kaiasia.app.service.fundstransfer.exception.UpdateFailedException;
 import com.kaiasia.app.service.fundstransfer.model.*;
-import com.kaiasia.app.service.fundstransfer.model.request.Auth1In;
-import com.kaiasia.app.service.fundstransfer.model.request.Auth3In;
-import com.kaiasia.app.service.fundstransfer.model.request.FundsTransferIn;
 import com.kaiasia.app.service.fundstransfer.model.response.Auth1Out;
 import com.kaiasia.app.service.fundstransfer.model.response.Auth3Out;
 import com.kaiasia.app.service.fundstransfer.model.response.FundsTransferOut;
+import com.kaiasia.app.service.fundstransfer.model.request.Auth1In;
+import com.kaiasia.app.service.fundstransfer.model.request.Auth3In;
+import com.kaiasia.app.service.fundstransfer.model.request.FundsTransferIn;
+import com.kaiasia.app.service.fundstransfer.model.validation.FundsTransferOptional;
 import com.kaiasia.app.service.fundstransfer.utils.ApiCallHelper;
 import com.kaiasia.app.service.fundstransfer.utils.ObjectAndJsonUtils;
 import com.kaiasia.app.service.fundstransfer.utils.ServiceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import ms.apiclient.model.*;
 import org.springframework.http.HttpMethod;
 
 import java.text.SimpleDateFormat;
@@ -43,7 +44,7 @@ public class FTInsideService {
 
     @KaiMethod(name = "FTInsideService", type = Register.VALIDATE)
     public ApiError validate(ApiRequest req) {
-        return ServiceUtils.validate(req, FundsTransferIn.class, apiErrorUtils, "TRANSACTION");
+        return ServiceUtils.validate(req, FundsTransferIn.class, apiErrorUtils, "TRANSACTION", FundsTransferOptional.class);
     }
 
     @KaiMethod(name = "FTInsideService")
