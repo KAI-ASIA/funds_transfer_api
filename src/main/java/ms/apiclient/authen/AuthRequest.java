@@ -17,6 +17,8 @@ public class AuthRequest {
 	private String password;
 	private String transId;
 	private String transInfo;
+	private String otp;
+	private String transTime;
 	private SmsParams smsParams;
 }
 
