@@ -2,7 +2,8 @@ package com.kaiasia.app.core;
 
 import com.kaiasia.app.core.async.IProcess;
 import com.kaiasia.app.core.dao.IAPIDaoManager;
-import com.kaiasia.app.core.model.*;
+import com.kaiasia.app.core.model.ApiRequestBean;
+import ms.apiclient.model.*;
 import com.kaiasia.app.core.utils.AppConfigPropertiesUtils;
 import com.kaiasia.app.core.utils.GetErrorUtils;
 import lombok.Data;
