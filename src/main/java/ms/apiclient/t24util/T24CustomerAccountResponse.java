@@ -1,0 +1,17 @@
+package ms.apiclient.t24util;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.Getter;
+import lombok.Setter;
+import ms.apiclient.account.Account;
+import ms.apiclient.model.ApiError;
+
+import java.util.List;
+
+@Setter
+@Getter
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class T24CustomerAccountResponse {
+    private List<Account> accounts;
+    private ApiError error;
+}

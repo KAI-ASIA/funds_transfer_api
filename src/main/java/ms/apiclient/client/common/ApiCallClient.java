@@ -70,7 +70,7 @@ public abstract class ApiCallClient {
         return (Map<String, Object>) response.getBody().get("enquiry");
     }
 
-    public static <T> ApiRequest buildENQUIRY(T enquiryInput, ApiHeader header) {
+    public static  ApiRequest buildENQUIRY(Object enquiryInput, ApiHeader header) {
         ApiRequest apiReq = new ApiRequest();
         apiReq.setHeader(header);
         ApiBody apiBody = new ApiBody();
@@ -81,7 +81,7 @@ public abstract class ApiCallClient {
     }
 
 
-    public static <T> ApiRequest buildTransaction(T transactionInput, ApiHeader header) {
+    public static ApiRequest buildTransaction(Object transactionInput, ApiHeader header) {
         ApiRequest apiReq = new ApiRequest();
         apiReq.setHeader(header);
         ApiBody apiBody = new ApiBody();

@@ -9,7 +9,7 @@ import ms.apiclient.model.ApiError;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Getter
 @Setter
-public class CustomerResult {
+public class T24CustomerInfoResponse {
     private String id;
     private String cifName;
     private String legalId;
