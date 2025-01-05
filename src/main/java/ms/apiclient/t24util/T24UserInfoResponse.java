@@ -8,7 +8,7 @@ import ms.apiclient.model.ApiError;
 @Setter
 @Getter
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class T24UserInfo {
+public class T24UserInfoResponse {
     private String customerId;
     private String customerType;
     private String name;

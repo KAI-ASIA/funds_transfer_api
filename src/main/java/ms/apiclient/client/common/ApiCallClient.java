@@ -2,6 +2,7 @@ package ms.apiclient.client.common;
 
 import java.util.Map;
 
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +15,9 @@ import ms.apiclient.model.ApiRequest;
 import ms.apiclient.model.ApiResponse;
 import org.springframework.web.client.RestClientException;
 
-@Component
 @Slf4j
+@Component
+@Setter
 public abstract class ApiCallClient {
     private static final ModelMapper mapper = new ModelMapper();
     @Autowired
