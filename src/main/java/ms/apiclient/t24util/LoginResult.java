@@ -10,11 +10,11 @@ import ms.apiclient.model.ApiError;
 @Getter
 @Setter
 public class LoginResult {
-	private String packageUser;
-	private String phone;
-	private ApiError error;
-	/*
-	 * todo
-	 */
-
+    private String packageUser;
+    private String phone;
+    private String customerID;
+    private String customerName;
+    private String companyCode;
+    private String username;
+    private ApiError error;
 }

@@ -10,12 +10,18 @@ import ms.apiclient.model.ApiError;
 @Getter
 @Setter
 public class CustomerResult {
-	private String id;
-	private String cifName;
-	private String legalId;
-	private ApiError error;
-	/*
-	 * todo
-	 */
-
+    private String id;
+    private String cifName;
+    private String legalId;
+    private String cifStatus;
+    private String language;
+    private String coCode;
+    private String phone;
+    private String email;
+    private String country;
+    private String address;
+    private String legalDocName;
+    private String legalExpDate;
+    private String customerType;
+    private ApiError error;
 }
