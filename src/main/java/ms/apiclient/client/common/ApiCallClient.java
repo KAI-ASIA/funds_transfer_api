@@ -25,14 +25,21 @@ public abstract class ApiCallClient {
     private String apiKey;
     private int apiTimeout;
 
-    protected  <T> T call(String location, ApiRequest request, Class<T> classResult) throws RestClientException {
+    protected <T> T call(String location, ApiRequest request, Class<T> classResult) throws RestClientException {
         request.setHeader(rebuildHeader(request.getHeader()));
         log.info("{}#begin call api {}", location, apiName);
-        ApiResponse response = apiRestTemplate.call(url, request, apiTimeout);
+        ApiResponse response;
+        try {
+            response = apiRestTemplate.call(url, request, apiTimeout);
+        } catch (RestClientException e) {
+            log.error("{}#while calling api {}: {}", location, apiName, e.getMessage());
+            throw e;
+        }
         log.info("{}#end call api {}", location, apiName);
+
         ApiError apiError;
         if (response == null) {
-            apiError = new ApiError("999","Unknown Response");
+            apiError = new ApiError("999", "Unknown Response");
             return mapper.map(apiError, classResult);
         }
         if (response.getError() != null) {
