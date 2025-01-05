@@ -2,11 +2,18 @@ package com.kaiasia.app.core;
 
 import com.kaiasia.app.core.async.IProcess;
 import com.kaiasia.app.core.async.IValidate;
+<<<<<<< HEAD
+=======
 import ms.apiclient.model.ApiBody;
 import ms.apiclient.model.ApiError;
 import ms.apiclient.model.ApiRequest;
 import ms.apiclient.model.ApiResponse;
+>>>>>>> f3ca1affc4378f29e21c150321493ffd077f72a4
 import com.kaiasia.app.core.utils.ReqIDAutoCreate;
+import ms.apiclient.model.ApiBody;
+import ms.apiclient.model.ApiError;
+import ms.apiclient.model.ApiRequest;
+import ms.apiclient.model.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

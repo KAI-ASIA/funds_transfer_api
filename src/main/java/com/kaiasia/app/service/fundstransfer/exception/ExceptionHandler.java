@@ -1,17 +1,16 @@
 package com.kaiasia.app.service.fundstransfer.exception;
 
+import com.kaiasia.app.core.utils.GetErrorUtils;
+import lombok.extern.slf4j.Slf4j;
 import ms.apiclient.model.ApiError;
 import ms.apiclient.model.ApiHeader;
 import ms.apiclient.model.ApiRequest;
 import ms.apiclient.model.ApiResponse;
-import com.kaiasia.app.core.utils.GetErrorUtils;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 
 import java.lang.reflect.InvocationTargetException;
-
 import java.util.function.Function;
 
 @Component

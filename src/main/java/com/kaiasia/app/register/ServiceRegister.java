@@ -1,9 +1,9 @@
 package com.kaiasia.app.register;
 
+import com.kaiasia.app.core.utils.GetErrorUtils;
 import ms.apiclient.model.ApiError;
 import ms.apiclient.model.ApiRequest;
 import ms.apiclient.model.ApiResponse;
-import com.kaiasia.app.core.utils.GetErrorUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +48,7 @@ public class ServiceRegister {
 
     /**
      * Đăng ký các method có annotation KaiMethod trong class.
+     *
      * @param service - Class cần đăng ký các method.
      */
     private void doRegisterMethod(Class service) {
@@ -67,8 +68,9 @@ public class ServiceRegister {
 
     /**
      * Thực thi method nếu đã đăng ký (Với tình hình hiện tại là nó sẽ tìm mỗi thằng VALIDATE_TestService rồi thực thi)
+     *
      * @param authenType - Tên service (UserService,.....).
-     * @param request - Request đầu vào.
+     * @param request    - Request đầu vào.
      * @return Thông tin lỗi.
      */
     public ApiError processValidate(String authenType, ApiRequest request) {
@@ -85,7 +87,7 @@ public class ServiceRegister {
                 // Nếu không có thì không được thực thi
                 logger.debug("Dont have method validate for AuthenType: {}", validateAuthenType);
                 err.setCode("333");
-                err.setDesc("Invalid authenType"); 
+                err.setDesc("Invalid authenType");
             }
         } catch (Exception ex) {
             logger.error("{}{}", request, ex);
@@ -99,7 +101,7 @@ public class ServiceRegister {
      * Thực thi method nếu đã đăng ký (Với tình hình hiện tại là nó sẽ tìm mỗi thằng TestService rồi thực thi).
      *
      * @param authenType - Tên service cần thực thi.
-     * @param req - Request đầu vào.
+     * @param req        - Request đầu vào.
      * @return ApiResponse - Kết quả trả về từ method được thực thi.
      */
     public ApiResponse processAuthenType(String authenType, ApiRequest req) {
@@ -115,8 +117,8 @@ public class ServiceRegister {
                 ApiError err = new ApiError();
                 err.setCode("333");
                 err.setDesc("Invalid authenType");
-				rs.setError(err);
-				return rs;
+                rs.setError(err);
+                return rs;
             }
         } catch (Exception ex) {
             logger.error("{}", ex);
