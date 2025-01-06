@@ -2,7 +2,7 @@ package com.kaiasia.app.service.fundstransfer.utils;
 
 
 import com.kaiasia.app.core.utils.ApiConstant;
-import com.kaiasia.app.service.fundstransfer.configuration.KaiRestTemplate1;
+//import com.kaiasia.app.service.fundstransfer.configuration.KaiRestTemplate1;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
@@ -21,8 +21,8 @@ import org.springframework.stereotype.Component;
 @Setter
 @ToString
 public class ApiCallClient {
-    @Autowired
-    private KaiRestTemplate1 kaiRestTemplate;
+//    @Autowired
+//    private KaiRestTemplate1 kaiRestTemplate;
     private String url;
     private String apiKey;
     private String apiName;
