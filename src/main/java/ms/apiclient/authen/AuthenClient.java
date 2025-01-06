@@ -5,6 +5,7 @@ import ms.apiclient.model.ApiHeader;
 import ms.apiclient.model.ApiRequest;
 
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClientException;
 
 @Component
 public class AuthenClient extends ApiCallClient {
@@ -15,7 +16,7 @@ public class AuthenClient extends ApiCallClient {
 	 * @param header - Header của request đầu vào.
 	 * @return Trả về AuthLoginResponse chứa (ResponseCode, SessionId, Username, TransId, PackageUser, Phone, CustomerID, CustomerName, CompanyName) hoặc 1 ApiError
 	 */
-	public AuthLoginResponse getLogin(String location, AuthRequest authRequest, ApiHeader header){
+	public AuthLoginResponse getLogin(String location, AuthRequest authRequest, ApiHeader header) throws RestClientException {
 		authRequest.setAuthenType("getLogin");
 		ApiRequest apiReq = buildENQUIRY(authRequest, header);
 		return this.call(location, apiReq, AuthLoginResponse.class);
@@ -28,7 +29,7 @@ public class AuthenClient extends ApiCallClient {
 	 * @param header - Header của request đầu vào.
 	 * @return Trả về AuthLoginResponse chứa (ResponseCode, SessionId, Username) hoặc 1 ApiError
 	 */
-	public AuthTakeSessionResponse takeSession(String location, AuthRequest authRequest, ApiHeader header){
+	public AuthTakeSessionResponse takeSession(String location, AuthRequest authRequest, ApiHeader header) throws RestClientException{
 		authRequest.setAuthenType("takeSession");
 		ApiRequest apiReq = buildENQUIRY(authRequest, header);
 		return this.call(location, apiReq, AuthTakeSessionResponse.class);
@@ -41,7 +42,7 @@ public class AuthenClient extends ApiCallClient {
 	 * @param header - Header của request đầu vào.
 	 * @return Trả về AuthLoginResponse chứa (ResponseCode, TransId) hoặc 1 ApiError
 	 */
-	public AuthOTPResponse getOTP(String location, AuthRequest authRequest, ApiHeader header){
+	public AuthOTPResponse getOTP(String location, AuthRequest authRequest, ApiHeader header) throws RestClientException{
 		authRequest.setAuthenType("getOTP");
 		ApiRequest apiReq = buildENQUIRY(authRequest, header);
 		return this.call(location, apiReq, AuthOTPResponse.class);
@@ -55,7 +56,7 @@ public class AuthenClient extends ApiCallClient {
 	 * @param header - Header của request đầu vào.
 	 * @return Trả về AuthLoginResponse chứa (ResponseCode, TransId) hoặc 1 ApiError
 	 */
-	public AuthOTPResponse confirmOTP(String location, AuthRequest authRequest, ApiHeader header){
+	public AuthOTPResponse confirmOTP(String location, AuthRequest authRequest, ApiHeader header) throws RestClientException{
 		authRequest.setAuthenType("confirmOTP");
 		ApiRequest apiReq = buildENQUIRY(authRequest, header);
 		return this.call(location, apiReq, AuthOTPResponse.class);
