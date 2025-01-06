@@ -1,11 +1,6 @@
 package com.kaiasia.app.core;
 
 import com.kaiasia.app.core.async.IValidate;
-<<<<<<< HEAD
-=======
-import ms.apiclient.model.ApiError;
-import ms.apiclient.model.ApiRequest;
->>>>>>> f3ca1affc4378f29e21c150321493ffd077f72a4
 import com.kaiasia.app.core.utils.GetErrorUtils;
 import com.kaiasia.app.register.Register;
 import com.kaiasia.app.register.ServiceRegister;

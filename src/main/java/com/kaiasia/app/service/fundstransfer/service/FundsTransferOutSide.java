@@ -1,6 +1,7 @@
 package com.kaiasia.app.service.fundstransfer.service;
 
 import com.kaiasia.app.core.model.*;
+import com.kaiasia.app.core.utils.AppConfigPropertiesUtils;
 import com.kaiasia.app.core.utils.GetErrorUtils;
 import com.kaiasia.app.register.KaiMethod;
 import com.kaiasia.app.register.KaiService;
@@ -13,6 +14,7 @@ import com.kaiasia.app.service.fundstransfer.exception.ExceptionHandler;
 import com.kaiasia.app.service.fundstransfer.exception.InsertFailedException;
 import com.kaiasia.app.service.fundstransfer.exception.UpdateFailedException;
 import com.kaiasia.app.service.fundstransfer.model.TransactionInfo;
+import com.kaiasia.app.service.fundstransfer.model.enums.TransactionStatus;
 import com.kaiasia.app.service.fundstransfer.model.request.Auth1In;
 import com.kaiasia.app.service.fundstransfer.model.request.Auth3In;
 import com.kaiasia.app.service.fundstransfer.model.request.FundsTransferIn;
@@ -20,15 +22,16 @@ import com.kaiasia.app.service.fundstransfer.model.request.Napas2In;
 import com.kaiasia.app.service.fundstransfer.utils.ApiCallHelper;
 import com.kaiasia.app.service.fundstransfer.utils.ObjectAndJsonUtils;
 import lombok.extern.slf4j.Slf4j;
+import ms.apiclient.authen.AuthOTPResponse;
+import ms.apiclient.authen.AuthRequest;
+import ms.apiclient.authen.AuthTakeSessionResponse;
+import ms.apiclient.authen.AuthenClient;
 import ms.apiclient.model.*;
-import ms.apiclient.t24util.LoginResult;
-import ms.apiclient.t24util.T24Request;
-import ms.apiclient.t24util.T24UtilClient;
+import ms.apiclient.t24util.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 
-import javax.annotation.PostConstruct;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -48,7 +51,10 @@ public class FundsTransferOutSide {
     private ExceptionHandler exceptionHandler;
     @Autowired
     private T24UtilClient t24UtilClient;
-
+    @Autowired
+    AppConfigPropertiesUtils appConfigPropertiesUtils;
+    @Autowired
+    AuthenClient authenClient;
 
     @KaiMethod(name = "FundsTransferOutSide", type = Register.VALIDATE)
     public ApiError validate(ApiRequest request) {
@@ -80,52 +86,37 @@ public class FundsTransferOutSide {
     @KaiMethod(name = "FundsTransferOutSide")
     public ApiResponse process(ApiRequest request) {
         HashMap requestTransaction = (HashMap) request.getBody().get("transaction");
-        String location = "FundsTransferOutSide/" + requestTransaction.get("sessionId") + "/" + System.currentTimeMillis();
-
+        String location = "FundsTransferOutSide_" + requestTransaction.get("sessionId") + "_" + System.currentTimeMillis();
         return exceptionHandler.handle(req -> {
             ApiResponse response = new ApiResponse();
             ApiError error;
-            ApiHeader header = request.getHeader();
-            header.setReqType("RESPONSE");
-            response.setHeader(header);
+            ApiHeader origHeader = request.getHeader();
+            ApiHeader header = copyHeaders(origHeader);
 
+            origHeader.setReqType("RESPONSE");
+            response.setHeader(origHeader);
             // Call Auth-1 Check Session
-            DepApiProperties authApiProperties = depApiConfig.getAuthApi();
-            Auth1In auth1RequestEnquiry = Auth1In.builder().authenType("takeSession").sessionId((String) requestTransaction.get("sessionId")).build();
-            ApiRequest auth1Request = kaiApiRequestBuilderFactory.getBuilder()
-                    .api(authApiProperties.getApiName())
-                    .apiKey(authApiProperties.getApiKey())
-                    .bodyProperties("command", "GET_ENQUIRY")
-                    .bodyProperties("enquiry", auth1RequestEnquiry)
-                    .build();
 
             String username = "";
-            ApiResponse auth1Response = ApiCallHelper.call(authApiProperties.getUrl(), HttpMethod.POST, ObjectAndJsonUtils.toJson(auth1Request), ApiResponse.class, authApiProperties.getTimeout());
-            error = auth1Response.getError();
-            if (error != null || !"OK".equals(auth1Response.getBody().get("status"))) {
+            AuthTakeSessionResponse authTakeSessionResponse = authenClient.takeSession(location, AuthRequest.builder()
+                    .sessionId((String) requestTransaction.get("sessionId")).build(), header);
+            error = authTakeSessionResponse.getError();
+            if (error != null) {
                 log.error("{}#{}", location + "#After call Auth-1", error);
                 response.setError(error);
                 return response;
             }
-            username = (String) ((HashMap) auth1Response.getBody().get("enquiry")).get("username");
+            username = authTakeSessionResponse.getUsername();
 
             // Call Auth-3 Confirm OTP
-            Auth3In auth3RequestEnquiry = Auth3In.builder().authenType("confirmOTP")
+            AuthOTPResponse authOTPResponse = authenClient.confirmOTP(location, AuthRequest.builder()
                     .sessionId((String) requestTransaction.get("sessionId"))
                     .username(username).otp((String) requestTransaction.get("OTP"))
                     .transTime(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()))
                     .transId((String) requestTransaction.get("transactionId"))
-                    .build();
-            ApiRequest auth3Request = kaiApiRequestBuilderFactory.getBuilder()
-                    .api(authApiProperties.getApiName())
-                    .apiKey(authApiProperties.getApiKey())
-                    .bodyProperties("command", "GET_ENQUIRY")
-                    .bodyProperties("enquiry", auth3RequestEnquiry)
-                    .build();
-
-            ApiResponse auth3Response = ApiCallHelper.call(authApiProperties.getUrl(), HttpMethod.POST, ObjectAndJsonUtils.toJson(auth3Request), ApiResponse.class, authApiProperties.getTimeout());
-            error = auth3Response.getError();
-            if (error != null || !"OK".equals(auth3Response.getBody().get("status"))) {
+                    .build(), header);
+            error = authOTPResponse.getError();
+            if (error != null) {
                 log.error("{}:{}", location + "#After call Auth-3", error);
                 response.setError(error);
                 return response;
@@ -133,14 +124,13 @@ public class FundsTransferOutSide {
 
             String customerId = (String) requestTransaction.get("customerID");
             TransactionInfo transactionInfo = TransactionInfo.builder()
-                    .transactionId(String.join("-", customerId, new SimpleDateFormat("ddMMyyyy").format(new Date())))
+                    .transactionId(String.join("_", customerId, new SimpleDateFormat("ddMMyyyy-HHmmss").format(new Date())))
                     .customerId(customerId)
                     .otp((String) requestTransaction.get("OTP"))
                     .approvalMethod("SOFTOTP")
                     .insertTime(new Date())
-                    .status("PROCESSING")
+                    .status(TransactionStatus.PROCESSING.name())
                     .build();
-
             try {
                 transactionInfoDAO.insert(transactionInfo);
             } catch (Exception e) {
@@ -148,36 +138,33 @@ public class FundsTransferOutSide {
             }
 
             //Call T2405 - Funds transfer logic
-            DepApiProperties t24utilsApiProperties = depApiConfig.getT24utilsApi();
-            FundsTransferIn t2405RequestTransaction = FundsTransferIn.builder().authenType("KAI.API.FT.PROCESS")
+            T24FundTransferResponse t24FundTransferResponse = t24UtilClient.fundTransfer(location, T24Request.builder().authenType("KAI.API.FT.PROCESS")
                     .transactionId((String) requestTransaction.get("transactionId"))
                     .debitAccount((String) requestTransaction.get("debitAccount"))
                     .creditAccount((String) requestTransaction.get("creditAccount"))
                     .bankId((String) requestTransaction.get("bankId"))
                     .transAmount((String) requestTransaction.get("transAmount"))
                     .transDesc((String) requestTransaction.get("transDesc"))
-                    .build();
-            ApiRequest t2405Request = kaiApiRequestBuilderFactory.getBuilder()
-                    .api(t24utilsApiProperties.getApiName())
-                    .apiKey(t24utilsApiProperties.getApiKey())
-                    .bodyProperties("command", "GET_TRANSACTION")
-                    .bodyProperties("transaction", t2405RequestTransaction)
-                    .build();
+                    .build(), header);
 
-            ApiResponse t2405Response = ApiCallHelper.call(t24utilsApiProperties.getUrl(), HttpMethod.POST, ObjectAndJsonUtils.toJson(t2405Request), ApiResponse.class, t24utilsApiProperties.getTimeout());
-            error = t2405Response.getError();
-            if (error != null || !"OK".equals(t2405Response.getBody().get("status"))) {
+            error = t24FundTransferResponse.getError();
+            HashMap<String, Object> params = new HashMap();
+            if (error != null) {
+                params.put("response_code", error.getCode());
+                params.put("response_str", error.getDesc());
+                params.put("status", TransactionStatus.ERROR);
                 log.error("{}:{}", location + "#After call T2405", error);
+                try {
+                    transactionInfoDAO.update(transactionInfo.getTransactionId(), params);
+                } catch (Exception e) {
+                    throw new UpdateFailedException(e);
+                }
                 response.setError(error);
                 return response;
             }
-
-            HashMap t2405ResponseTransaction = (HashMap) t2405Response.getBody().get("transaction");
-            HashMap<String, Object> params = new HashMap();
-            params.put("response_code", t2405ResponseTransaction.get("responseCode"));
-            params.put("bank_trans_id", t2405ResponseTransaction.get("transactionNo"));
+            params.put("response_code", t24FundTransferResponse.getResponseCode());
+            params.put("bank_trans_id", t24FundTransferResponse.getTransactionNO());
             params.put("last_update", new Date());
-
             try {
                 transactionInfoDAO.update(transactionInfo.getTransactionId(), params);
             } catch (Exception e) {
@@ -189,7 +176,7 @@ public class FundsTransferOutSide {
             Napas2In napas2RequestTransaction = Napas2In.builder().authenType("getTransFastAcc")
                     .senderAccount((String) requestTransaction.get("debitAccount"))// chua ro rang du lieu
                     .amount((String) requestTransaction.get("transAmount")).ccy("VND")
-                    .transRef((String) t2405ResponseTransaction.get("transactionNo"))
+                    .transRef(t24FundTransferResponse.getTransactionNO())
                     .benAcc((String) requestTransaction.get("creditAccount"))// chua ro rang du lieu
                     .bankId((String) requestTransaction.get("bankId"))
                     .transContent((String) requestTransaction.get("transContent"))
@@ -208,16 +195,29 @@ public class FundsTransferOutSide {
                 // TODO: revert giao dich
             }
 
-
             // build success body
             ApiBody body = new ApiBody();
             HashMap<String, Object> responseTransaction = new HashMap<>();
-            responseTransaction.put("responseCode", "00");
-            responseTransaction.put("transactionNO", t2405ResponseTransaction.get("transactionNo"));
+            responseTransaction.put("responseCode", t24FundTransferResponse.getResponseCode());
+            responseTransaction.put("transactionNO", t24FundTransferResponse.getTransactionNO());
             responseTransaction.put("napasRef", ((HashMap) napas2Response.getBody().get("transaction")).get("napasRef"));
             body.put("transaction", responseTransaction);
             response.setBody(body);
             return response;
         }, request, "FundsTransferOutSide/" + requestTransaction.get("sessionId") + "/" + System.currentTimeMillis());
+    }
+
+    private ApiHeader copyHeaders(ApiHeader origHeader) {
+        ApiHeader header = new ApiHeader();
+        header.setReqType(origHeader.getReqType());
+        header.setChannel(origHeader.getChannel());
+        header.setContext(origHeader.getContext());
+        header.setDuration(origHeader.getDuration());
+        header.setLocation(origHeader.getLocation());
+        header.setPriority(origHeader.getPriority());
+        header.setSynasyn(origHeader.getSynasyn());
+        header.setRequestAPI(appConfigPropertiesUtils.getApiName());
+        header.setRequestNode(appConfigPropertiesUtils.getIp());
+        return header;
     }
 }
