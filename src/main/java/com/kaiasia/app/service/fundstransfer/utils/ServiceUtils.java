@@ -25,7 +25,7 @@ public class ServiceUtils {
      * @param apiErrorUtils Tiện ích để tạo thông báo lỗi.
      * @param transOrEnquiry Phần trong nội dung yêu cầu cần kiểm tra, ví dụ: "TRANSACTION" hoặc "ENQUIRY".
      * @param groups Chuẩn đối chiếu validate.
-     * @return Trả về đối tượng ApiError, chứa mã lỗi và mô tả lỗi nếu không hợp lệ; ngược lại trả về mã OK nếu hợp lệ.
+     * @return Trả về đối tượng ApiError, chứa mã lỗi và mô tả lỗi nếu không hợp lệ; ngược lại trả về mã 000 nếu hợp lệ.
      * @since 1.1
      * @author Phạm Huy Hoàng
      */
@@ -66,7 +66,7 @@ public class ServiceUtils {
      * @param apiErrorUtils Tiện ích để tạo thông báo lỗi.
      * @param transOrEnquiry Phần trong nội dung phản hồi cần kiểm tra, ví dụ: "TRANSACTION" hoặc "ENQUIRY".
      * @param groups Chuẩn đối chiếu validate.
-     * @return Trả về đối tượng ApiError, chứa mã lỗi và mô tả lỗi nếu không hợp lệ; ngược lại trả về mã OK nếu hợp lệ.
+     * @return Trả về đối tượng ApiError, chứa mã lỗi và mô tả lỗi nếu không hợp lệ; ngược lại trả về mã 000 nếu hợp lệ.
      * @since 1.1
      * @author Phạm Huy Hoàng
      */
@@ -102,7 +102,7 @@ public class ServiceUtils {
      *
      * @param <T>           Kiểu của đối tượng cần kiểm tra.
      * @param groups Chuẩn đối chiếu validate.
-     * @return Trả về đối tượng ApiError, chứa mã lỗi và mô tả lỗi nếu không hợp lệ; ngược lại trả về mã OK nếu hợp lệ.
+     * @return Trả về đối tượng BaseResponse, chứa mã lỗi và mô tả lỗi nếu không hợp lệ; ngược lại trả về mã 000 nếu hợp lệ.
      * @since 1.0
      * @author Phạm Huy Hoàng
      */
@@ -117,7 +117,10 @@ public class ServiceUtils {
                                    .desc("Validation failed: " + errorMessage)
                                    .build();
             }
-            return null;
+            return BaseResponse.builder()
+                               .code("000")
+                               .desc("OK")
+                               .build();
     }
 
 }

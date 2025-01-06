@@ -1,6 +1,5 @@
 package com.kaiasia.app.service.fundstransfer.service;
 
-import com.kaiasia.app.core.model.*;
 import com.kaiasia.app.core.utils.GetErrorUtils;
 import com.kaiasia.app.register.KaiMethod;
 import com.kaiasia.app.register.KaiService;
@@ -21,14 +20,11 @@ import com.kaiasia.app.service.fundstransfer.utils.ApiCallHelper;
 import com.kaiasia.app.service.fundstransfer.utils.ObjectAndJsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import ms.apiclient.model.*;
-import ms.apiclient.t24util.LoginResult;
-import ms.apiclient.t24util.T24Request;
 import ms.apiclient.t24util.T24UtilClient;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 
-import javax.annotation.PostConstruct;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
