@@ -7,11 +7,9 @@ import org.springframework.context.annotation.ImportResource;
 
 @SpringBootApplication
 @ImportResource({"classpath:spring-beans-dao.xml"})
-@ComponentScan(basePackages = {"com.kaiasia","ms.apiclient"})
+@ComponentScan(basePackages = {"com.kaiasia", "ms.apiclient"})
 public class AppApplication {
-
     public static void main(String[] args) {
         SpringApplication.run(AppApplication.class, args);
     }
-
 }
