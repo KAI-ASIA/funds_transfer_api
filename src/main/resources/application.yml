@@ -66,9 +66,3 @@ dep-api:
     url: http://localhost:8025/NAPAS_API/process
     timeout: 60000
     apiKey: napas861klfoni1ezxl5f2ck771
-
-logging:
-  group:
-    kai: ms.apiclient, com.kaiasia
-  file:
-    name: log.log

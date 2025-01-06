@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+    <appender name="KAI" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>log/kai-log.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>log/kai-log.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>50MB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>
+                %d{dd-MM-yyyy HH:mm:ss.SSS} %-5level --- %-40logger - %msg%n
+            </pattern>
+        </encoder>
+    </appender>
+
+    <root level="info">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+
+    <logger name="com.kaiasia" level="debug">
+        <appender-ref ref="KAI"/>
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+
+    <logger name="ms.apiclient" level="debug">
+        <appender-ref ref="KAI"/>
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+</configuration>

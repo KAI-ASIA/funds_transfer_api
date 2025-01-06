@@ -1,6 +1,5 @@
 package com.kaiasia.app.service.fundstransfer.service;
 
-import com.kaiasia.app.core.model.*;
 import com.kaiasia.app.core.utils.AppConfigPropertiesUtils;
 import com.kaiasia.app.core.utils.GetErrorUtils;
 import com.kaiasia.app.register.KaiMethod;
@@ -15,9 +14,6 @@ import com.kaiasia.app.service.fundstransfer.exception.InsertFailedException;
 import com.kaiasia.app.service.fundstransfer.exception.UpdateFailedException;
 import com.kaiasia.app.service.fundstransfer.model.TransactionInfo;
 import com.kaiasia.app.service.fundstransfer.model.enums.TransactionStatus;
-import com.kaiasia.app.service.fundstransfer.model.request.Auth1In;
-import com.kaiasia.app.service.fundstransfer.model.request.Auth3In;
-import com.kaiasia.app.service.fundstransfer.model.request.FundsTransferIn;
 import com.kaiasia.app.service.fundstransfer.model.request.Napas2In;
 import com.kaiasia.app.service.fundstransfer.utils.ApiCallHelper;
 import com.kaiasia.app.service.fundstransfer.utils.ObjectAndJsonUtils;
