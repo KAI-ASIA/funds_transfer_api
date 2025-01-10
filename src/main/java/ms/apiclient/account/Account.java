@@ -3,6 +3,7 @@ package ms.apiclient.account;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.Setter;
+import ms.apiclient.model.ApiError;
 
 @Setter
 @Getter
@@ -17,4 +18,5 @@ public class Account {
     private String company;
     private String accountStatus;
     private String shortTitle;
+    private ApiError error = new ApiError(ApiError.OK_CODE, ApiError.OK_DESC);
 }

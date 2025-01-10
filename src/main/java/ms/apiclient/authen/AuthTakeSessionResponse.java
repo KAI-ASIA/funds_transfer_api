@@ -13,5 +13,5 @@ public class AuthTakeSessionResponse {
     private String responseCode;
     private String sessionId;
     private String username;
-    private ApiError error;
+    private ApiError error = new ApiError(ApiError.OK_CODE, ApiError.OK_DESC);
 }

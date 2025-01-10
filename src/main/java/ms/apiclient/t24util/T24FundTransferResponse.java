@@ -11,5 +11,5 @@ import ms.apiclient.model.ApiError;
 public class T24FundTransferResponse {
     private String transactionNO;
     private String responseCode;
-    private ApiError error;
+    private ApiError error = new ApiError(ApiError.OK_CODE, ApiError.OK_DESC);
 }
