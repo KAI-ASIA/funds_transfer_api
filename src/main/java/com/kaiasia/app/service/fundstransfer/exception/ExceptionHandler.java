@@ -20,10 +20,9 @@ public class ExceptionHandler {
     private GetErrorUtils getErrorUtils;
 
     /**
-     *
-     * @param process hàm logic xử lý mà ta muốn ủy quyền lại cho {@link ExceptionHandler}
+     * @param process    hàm logic xử lý mà ta muốn ủy quyền lại cho {@link ExceptionHandler}
      * @param apiRequest tham số mà hàm <b>process</b> cần
-     * @param location vị trí để thực thi ghi log lỗi
+     * @param location   vị trí để thực thi ghi log lỗi
      * @return trả về response tương ứng vứi hàm process trả về
      */
     public ApiResponse handle(Function<ApiRequest, ApiResponse> process, ApiRequest apiRequest, String location) {
@@ -44,22 +43,22 @@ public class ExceptionHandler {
         log.error("{}:{}", location, e.getMessage());
         ApiError error;
         if (e instanceof InsertFailedException) {
-            error = getErrorUtils.getError("501", new String[]{e.getMessage()});
+            error = getErrorUtils.getError(ApiErrorCode.FAILED_TO_INSERT_TO_DB, new String[]{e.getMessage()});
             return error;
         }
         if (e instanceof UpdateFailedException) {
-            error = getErrorUtils.getError("502", new String[]{e.getMessage()});
+            error = getErrorUtils.getError(ApiErrorCode.FAILED_TO_UPDATE_TO_DB, new String[]{e.getMessage()});
             return error;
         }
         if (e instanceof RestClientException) {
-            error = getErrorUtils.getError("505", new String[]{e.getMessage()});
+            error = getErrorUtils.getError(ApiErrorCode.FAILED_TO_CALL_API, new String[]{e.getMessage()});
             return error;
         }
         if (e instanceof MapperException) {
             error = getErrorUtils.getError("600", new String[]{e.getMessage()});
             return error;
         }
-        error = getErrorUtils.getError("999", new String[]{e.getMessage()});
+        error = getErrorUtils.getError(ApiErrorCode.INTERNAL_ERROR, new String[]{e.getMessage()});
         return error;
     }
 

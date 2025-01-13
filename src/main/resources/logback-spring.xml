@@ -11,7 +11,7 @@
         </rollingPolicy>
         <encoder>
             <pattern>
-                %d{dd-MM-yyyy HH:mm:ss.SSS} %-5level --- %-40logger - %msg%n
+                %d{dd-MM-yyyy HH:mm:ss.SSS} %-5level --- [%-40logger] - %msg%n
             </pattern>
         </encoder>
     </appender>
@@ -20,12 +20,12 @@
         <appender-ref ref="CONSOLE"/>
     </root>
 
-    <logger name="com.kaiasia" level="debug">
+    <logger name="com.kaiasia" level="debug" additivity="false">
         <appender-ref ref="KAI"/>
         <appender-ref ref="CONSOLE"/>
     </logger>
 
-    <logger name="ms.apiclient" level="debug">
+    <logger name="ms.apiclient" level="debug" additivity="false">
         <appender-ref ref="KAI"/>
         <appender-ref ref="CONSOLE"/>
     </logger>
