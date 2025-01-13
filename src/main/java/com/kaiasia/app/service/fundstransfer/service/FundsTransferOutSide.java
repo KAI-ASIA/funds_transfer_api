@@ -17,6 +17,7 @@ import com.kaiasia.app.service.fundstransfer.model.enums.TransactionStatus;
 import com.kaiasia.app.service.fundstransfer.model.request.Napas2In;
 import com.kaiasia.app.service.fundstransfer.utils.ApiCallHelper;
 import com.kaiasia.app.service.fundstransfer.utils.ObjectAndJsonUtils;
+import com.kaiasia.app.utils.ApiUtils;
 import lombok.extern.slf4j.Slf4j;
 import ms.apiclient.authen.AuthOTPResponse;
 import ms.apiclient.authen.AuthRequest;
@@ -26,6 +27,7 @@ import ms.apiclient.model.*;
 import ms.apiclient.t24util.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 
 import java.text.SimpleDateFormat;
@@ -48,9 +50,9 @@ public class FundsTransferOutSide {
     @Autowired
     private T24UtilClient t24UtilClient;
     @Autowired
-    AppConfigPropertiesUtils appConfigPropertiesUtils;
-    @Autowired
     AuthenClient authenClient;
+    @Value("${kai.name}")
+    private String requestApi;
 
     @KaiMethod(name = "FundsTransferOutSide", type = Register.VALIDATE)
     public ApiError validate(ApiRequest request) {
@@ -83,6 +85,7 @@ public class FundsTransferOutSide {
     public ApiResponse process(ApiRequest request) {
         HashMap requestTransaction = (HashMap) request.getBody().get("transaction");
         String location = "FundsTransferOutSide_" + requestTransaction.get("sessionId") + "_" + System.currentTimeMillis();
+        log.info("{}#BEGIN", location);
         return exceptionHandler.handle(req -> {
             ApiResponse response = new ApiResponse();
             ApiError error;
@@ -199,8 +202,9 @@ public class FundsTransferOutSide {
             responseTransaction.put("napasRef", ((HashMap) napas2Response.getBody().get("transaction")).get("napasRef"));
             body.put("transaction", responseTransaction);
             response.setBody(body);
+            log.info("{}#END", location);
             return response;
-        }, request, "FundsTransferOutSide/" + requestTransaction.get("sessionId") + "/" + System.currentTimeMillis());
+        }, request, location);
     }
 
     private ApiHeader copyHeaders(ApiHeader origHeader) {
@@ -212,8 +216,8 @@ public class FundsTransferOutSide {
         header.setLocation(origHeader.getLocation());
         header.setPriority(origHeader.getPriority());
         header.setSynasyn(origHeader.getSynasyn());
-        header.setRequestAPI(appConfigPropertiesUtils.getApiName());
-        header.setRequestNode(appConfigPropertiesUtils.getIp());
+        header.setRequestAPI(requestApi);
+        header.setRequestNode(ApiUtils.getCurrentHostName());
         return header;
     }
 }
