@@ -6,6 +6,7 @@ import com.kaiasia.app.service.fundstransfer.dao.ITransactionInfoDAO;
 import com.kaiasia.app.service.fundstransfer.model.TransactionInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -54,6 +55,17 @@ public class TransactionInfoDAO implements ITransactionInfoDAO {
         param.put("transactionId", transactionId);
 
         return posgrestDAOHelper.update(sql.toString(), param);
+    }
+
+    @Override
+    public boolean checkExistTransactionId(String transactionId) throws Exception {
+        String sql = "SELECT 1 FROM " + tableName + " WHERE transaction_id = :transaction_id LIMIT 1";
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("transaction_id", transactionId);
+
+        Integer result =posgrestDAOHelper.querySingle(sql, paramMap, new BeanPropertyRowMapper<>(Integer.class));
+
+        return result != null;
     }
 
 
