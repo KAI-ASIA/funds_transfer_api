@@ -7,7 +7,6 @@ import ms.apiclient.model.ApiRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 
-@Component
 public class AuthenClient extends ApiCallClient {
 	/**
 	 * Phương thức này dùng để gọi đến Auth-0
