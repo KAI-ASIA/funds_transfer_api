@@ -1,5 +1,6 @@
 package com.kaiasia.app.service.fundstransfer.service;
 
+import com.kaiasia.app.core.utils.ApiConstant;
 import com.kaiasia.app.core.utils.AppConfigPropertiesUtils;
 import com.kaiasia.app.core.utils.GetErrorUtils;
 import com.kaiasia.app.register.KaiMethod;
@@ -14,9 +15,12 @@ import com.kaiasia.app.service.fundstransfer.exception.InsertFailedException;
 import com.kaiasia.app.service.fundstransfer.exception.UpdateFailedException;
 import com.kaiasia.app.service.fundstransfer.model.TransactionInfo;
 import com.kaiasia.app.service.fundstransfer.model.enums.TransactionStatus;
+import com.kaiasia.app.service.fundstransfer.model.request.FundsTransferIn;
 import com.kaiasia.app.service.fundstransfer.model.request.Napas2In;
+import com.kaiasia.app.service.fundstransfer.model.validation.FundsTransferOptional;
 import com.kaiasia.app.service.fundstransfer.utils.ApiCallHelper;
 import com.kaiasia.app.service.fundstransfer.utils.ObjectAndJsonUtils;
+import com.kaiasia.app.service.fundstransfer.utils.ServiceUtils;
 import com.kaiasia.app.utils.ApiUtils;
 import lombok.extern.slf4j.Slf4j;
 import ms.apiclient.authen.AuthOTPResponse;
@@ -56,35 +60,13 @@ public class FundsTransferOutSide {
 
     @KaiMethod(name = "FundsTransferOutSide", type = Register.VALIDATE)
     public ApiError validate(ApiRequest request) {
-        ApiError error = new ApiError(ApiError.OK_CODE, ApiError.OK_DESC);
-        HashMap transaction = (HashMap) request.getBody().get("transaction");
-
-        if (transaction == null) {
-            error = getErrorUtils.getError("804", new String[]{"transaction part is required"});
-            return error;
-        }
-
-        String[] requiredFields = new String[]{
-                "sessionId", "customerID", "company",
-                "OTP", "transactionId", "debitAccount",
-                "creditAccount", "bankId", "transAmount",
-                "transDesc"
-        };
-
-        for (String requiredField : requiredFields) {
-            if (!transaction.containsKey(requiredField) || StringUtils.isEmpty((String) transaction.get(requiredField))) {
-                error = getErrorUtils.getError("804", new String[]{requiredField + " is required"});
-                return error;
-            }
-        }
-
-        return error;
+        return ServiceUtils.validate(request, FundsTransferIn.class, getErrorUtils, "TRANSACTION", FundsTransferOptional.class);
     }
 
     @KaiMethod(name = "FundsTransferOutSide")
     public ApiResponse process(ApiRequest request) {
-        HashMap requestTransaction = (HashMap) request.getBody().get("transaction");
-        String location = "FundsTransferOutSide_" + requestTransaction.get("sessionId") + "_" + System.currentTimeMillis();
+        FundsTransferIn requestTransaction = ObjectAndJsonUtils.fromObject(request.getBody().get("transaction"), FundsTransferIn.class);
+        String location = "FundsTransferOutSide_" + requestTransaction.getSessionId() + "_" + System.currentTimeMillis();
         log.info("{}#BEGIN", location);
         return exceptionHandler.handle(req -> {
             ApiResponse response = new ApiResponse();
@@ -98,7 +80,7 @@ public class FundsTransferOutSide {
 
             String username = "";
             AuthTakeSessionResponse authTakeSessionResponse = authenClient.takeSession(location, AuthRequest.builder()
-                    .sessionId((String) requestTransaction.get("sessionId")).build(), header);
+                    .sessionId(requestTransaction.getSessionId()).build(), header);
             error = authTakeSessionResponse.getError();
             if (error != null) {
                 log.error("{}#{}", location + "#After call Auth-1", error);
@@ -109,10 +91,10 @@ public class FundsTransferOutSide {
 
             // Call Auth-3 Confirm OTP
             AuthOTPResponse authOTPResponse = authenClient.confirmOTP(location, AuthRequest.builder()
-                    .sessionId((String) requestTransaction.get("sessionId"))
-                    .username(username).otp((String) requestTransaction.get("OTP"))
+                    .sessionId(requestTransaction.getSessionId())
+                    .username(username).otp(requestTransaction.getOtp())
                     .transTime(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()))
-                    .transId((String) requestTransaction.get("transactionId"))
+                    .transId(requestTransaction.getTransactionId())
                     .build(), header);
             error = authOTPResponse.getError();
             if (error != null) {
@@ -121,11 +103,11 @@ public class FundsTransferOutSide {
                 return response;
             }
 
-            String customerId = (String) requestTransaction.get("customerID");
+            String customerId = requestTransaction.getCustomerID();
             TransactionInfo transactionInfo = TransactionInfo.builder()
-                    .transactionId(String.join("_", customerId, new SimpleDateFormat("ddMMyyyy-HHmmss").format(new Date())))
+                    .transactionId(requestTransaction.getTransactionId())
                     .customerId(customerId)
-                    .otp((String) requestTransaction.get("OTP"))
+                    .otp(requestTransaction.getOtp())
                     .approvalMethod("SOFTOTP")
                     .insertTime(new Date())
                     .status(TransactionStatus.PROCESSING.name())
@@ -138,12 +120,12 @@ public class FundsTransferOutSide {
 
             //Call T2405 - Funds transfer logic
             T24FundTransferResponse t24FundTransferResponse = t24UtilClient.fundTransfer(location, T24Request.builder().authenType("KAI.API.FT.PROCESS")
-                    .transactionId((String) requestTransaction.get("transactionId"))
-                    .debitAccount((String) requestTransaction.get("debitAccount"))
-                    .creditAccount((String) requestTransaction.get("creditAccount"))
-                    .bankId((String) requestTransaction.get("bankId"))
-                    .transAmount((String) requestTransaction.get("transAmount"))
-                    .transDesc((String) requestTransaction.get("transDesc"))
+                    .transactionId(requestTransaction.getTransactionId())
+                    .debitAccount(requestTransaction.getDebitAccount())
+                    .creditAccount(requestTransaction.getCreditAccount())
+                    .bankId(requestTransaction.getBankId())
+                    .transAmount(requestTransaction.getTransAmount())
+                    .transDesc(requestTransaction.getTransDesc())
                     .build(), header);
 
             error = t24FundTransferResponse.getError();
@@ -173,12 +155,12 @@ public class FundsTransferOutSide {
             //Call NAPAS-2
             DepApiProperties napasApiProperties = depApiConfig.getNapasApi();
             Napas2In napas2RequestTransaction = Napas2In.builder().authenType("getTransFastAcc")
-                    .senderAccount((String) requestTransaction.get("debitAccount"))// chua ro rang du lieu
-                    .amount((String) requestTransaction.get("transAmount")).ccy("VND")
+                    .senderAccount(requestTransaction.getDebitAccount())
+                    .amount(requestTransaction.getTransAmount()).ccy("VND")
                     .transRef(t24FundTransferResponse.getTransactionNO())
-                    .benAcc((String) requestTransaction.get("creditAccount"))// chua ro rang du lieu
-                    .bankId((String) requestTransaction.get("bankId"))
-                    .transContent((String) requestTransaction.get("transContent"))
+                    .benAcc(requestTransaction.getCreditAccount())// chua ro rang du lieu
+                    .bankId(requestTransaction.getBankId())
+                    .transContent(requestTransaction.getTransDesc())
                     .build();
             ApiRequest napas2Request = kaiApiRequestBuilderFactory.getBuilder()
                     .api(napasApiProperties.getApiName())

@@ -16,10 +16,14 @@ public class TransactionInfo {
     private String customerId;
     private String approvalMethod;
     private String otp;
-    public String responseCode;
-    public String responseStr;
-    public String status;
-    public String bankTransId;
-    public Date insertTime;
-    public Date lastUpdate;
+    private String responseCode;
+    private String responseStr;
+    private String status;
+    private String bankTransId;
+    private Date insertTime;
+    private Date lastUpdate;
+    private String creditAccount;
+    private String debitAccount;
+    private String amount;
+    private String bankCode;
 }
