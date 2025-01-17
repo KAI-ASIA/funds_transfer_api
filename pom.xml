@@ -70,7 +70,7 @@
         <dependency>
             <groupId>ms.kaiasia.client</groupId>
             <artifactId>kai-client</artifactId>
-            <version>20250105</version>
+            <version>20250117</version>
         </dependency>
     </dependencies>
 
