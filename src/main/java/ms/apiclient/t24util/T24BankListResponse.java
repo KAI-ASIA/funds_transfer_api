@@ -1,17 +1,16 @@
-package ms.apiclient.authen;
+package ms.apiclient.t24util;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import lombok.Getter;
 import lombok.Setter;
 import ms.apiclient.model.ApiError;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-@Getter
+import java.util.List;
+
 @Setter
-public class AuthTakeSessionResponse {
-    private String responseCode;
-    private String sessionId;
-    private String username;
+@Getter
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class T24BankListResponse {
+    private List<Bank> banks;
     private ApiError error = new ApiError(ApiError.OK_CODE, ApiError.OK_DESC);
 }

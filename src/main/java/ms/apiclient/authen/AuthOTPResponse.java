@@ -12,5 +12,5 @@ import ms.apiclient.model.ApiError;
 public class AuthOTPResponse {
     private String responseCode;
     private String transId;
-    private ApiError error;
+    private ApiError error = new ApiError(ApiError.OK_CODE, ApiError.OK_DESC);
 }

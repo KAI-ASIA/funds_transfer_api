@@ -16,5 +16,5 @@ public class T24LoginResponse {
     private String customerName;
     private String companyCode;
     private String username;
-    private ApiError error;
+    private ApiError error = new ApiError(ApiError.OK_CODE, ApiError.OK_DESC);
 }

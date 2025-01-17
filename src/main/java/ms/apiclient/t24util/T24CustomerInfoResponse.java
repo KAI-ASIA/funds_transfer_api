@@ -23,5 +23,5 @@ public class T24CustomerInfoResponse {
     private String legalDocName;
     private String legalExpDate;
     private String customerType;
-    private ApiError error;
+    private ApiError error = new ApiError(ApiError.OK_CODE, ApiError.OK_DESC);
 }

@@ -45,4 +45,21 @@ public class T24UtilClient extends ApiCallClient {
         return this.call(location, apiReq, T24FundTransferResponse.class);
     }
 
+    public T24FTExistsResponse ftExists(String location, T24Request t24request, ApiHeader header) throws RestClientException {
+        t24request.setAuthenType("KAI.API.FT.EXISTS");
+        ApiRequest apiReq = buildENQUIRY(t24request, header);
+        return this.call(location, apiReq, T24FTExistsResponse.class);
+    }
+
+    public T24BankListResponse getBankList(String location, T24Request t24request, ApiHeader header) throws RestClientException {
+        t24request.setAuthenType("KAI.API.BANKS");
+        ApiRequest apiReq = buildENQUIRY(t24request, header);
+        return this.call(location, apiReq, T24BankListResponse.class);
+    }
+
+    public T24ChangePasswordResponse changePassword(String location, T24Request t24request, ApiHeader header) throws RestClientException {
+        t24request.setAuthenType("KAI.API.USER.CHANGEPASS");
+        ApiRequest apiReq = buildENQUIRY(t24request, header);
+        return this.call(location, apiReq, T24ChangePasswordResponse.class);
+    }
 }

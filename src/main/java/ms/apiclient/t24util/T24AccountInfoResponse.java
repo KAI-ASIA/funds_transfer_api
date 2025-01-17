@@ -21,5 +21,5 @@ public class T24AccountInfoResponse {
     private String accountStatus;
     private String shortTitle;
     private String avaiBalance;
-    private ApiError error;
+    private ApiError error = new ApiError(ApiError.OK_CODE, ApiError.OK_DESC);
 }

@@ -13,5 +13,5 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class T24CustomerAccountResponse {
     private List<Account> accounts;
-    private ApiError error;
+    private ApiError error = new ApiError(ApiError.OK_CODE, ApiError.OK_DESC);
 }

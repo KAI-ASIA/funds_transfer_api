@@ -26,4 +26,6 @@ public class T24Request {
     private String transDesc;
     private String company;
     private String channel;
+    private String bankCode;
+    private String newPassword;
 }
