@@ -13,6 +13,7 @@ import com.kaiasia.app.service.fundstransfer.exception.ExceptionHandler;
 import com.kaiasia.app.service.fundstransfer.exception.InsertFailedException;
 import com.kaiasia.app.service.fundstransfer.exception.UpdateFailedException;
 import com.kaiasia.app.service.fundstransfer.model.*;
+import com.kaiasia.app.service.fundstransfer.model.enums.TransactionStatus;
 import com.kaiasia.app.service.fundstransfer.model.response.Auth1Out;
 import com.kaiasia.app.service.fundstransfer.model.response.Auth3Out;
 import com.kaiasia.app.service.fundstransfer.model.response.BaseResponse;
@@ -35,6 +36,7 @@ import ms.apiclient.t24util.T24UtilClient;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.client.RestClientException;
 
+import java.net.SocketTimeoutException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -71,67 +73,67 @@ public class FTInsideService {
             ApiBody body = new ApiBody();
 
 
-            // Call Auth-1 api
-            AuthTakeSessionResponse auth1Response = null;
-            try {
-                auth1Response = authenClient.takeSession(location,
-                        AuthRequest.builder()
-                                   .sessionId(requestData.getSessionId())
-                                   .build(),
-                        request.getHeader());
-            } catch (Exception e) {
-                throw new RestClientException(location, e);
-            }
-            error = auth1Response.getError();
-            if (error != null) {
-                log.error("{}:{}", location + "#After call Auth-1", error);
-                response.setError(error);
-                return response;
-            }
-
-            // Kiểm tra kết quả trả về đủ field không.
-            BaseResponse validateAuth1Error = ServiceUtils.validate(ObjectAndJsonUtils.fromObject(auth1Response, Auth1Out.class), SuccessGroup.class);
-            if (!validateAuth1Error.getCode().equals(ApiError.OK_CODE)) {
-                log.error("{}:{}", location + "#After call Auth-1", validateAuth1Error);
-                response.setError(new ApiError(validateAuth1Error.getCode(), validateAuth1Error.getDesc()));
-                return response;
-            }
-
-            // Call Auth-3 api
-            // Chuyển đổi sang định dạng yyyyMMddHHmmss
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-
-            AuthOTPResponse auth3Response = null;
-            try {
-                auth3Response = authenClient.confirmOTP(location,
-                        AuthRequest.builder()
-                                   .username(auth1Response.getUsername())
-                                   .sessionId(auth1Response.getSessionId())
-                                   .otp(requestData.getOtp())
-                                   .transTime(sdf.format(new Date()))
-                                   .transId(requestData.getTransactionId())
-                                   .build(),
-                        request.getHeader());
-            } catch (Exception e) {
-                throw new RestClientException(location, e);
-            }
-            error = auth3Response.getError();
-            if (error != null) {
-                log.error("{}:{}", location + "#After call Auth-3", error);
-                response.setError(error);
-                return response;
-            }
-
-            // Kiểm tra kết quả trả về đủ field không.
-            BaseResponse validateAuth3Error = ServiceUtils.validate(ObjectAndJsonUtils.fromObject(auth3Response, Auth3Out.class), SuccessGroup.class);
-            if (!validateAuth3Error.getCode().equals(ApiError.OK_CODE)) {
-                log.error("{}:{}", location + "#After call Auth-3", validateAuth3Error);
-                response.setError(new ApiError(validateAuth3Error.getCode(), validateAuth3Error.getDesc()));
-                return response;
-            }
-
+//            // Call Auth-1 api
+//            AuthTakeSessionResponse auth1Response = null;
+//            try {
+//                auth1Response = authenClient.takeSession(location,
+//                        AuthRequest.builder()
+//                                   .sessionId(requestData.getSessionId())
+//                                   .build(),
+//                        request.getHeader());
+//            } catch (Exception e) {
+//                throw new RestClientException(location, e);
+//            }
+//            error = auth1Response.getError();
+//            if (error != null) {
+//                log.error("{}:{}", location + "#After call Auth-1", error);
+//                response.setError(error);
+//                return response;
+//            }
+//
+//            // Kiểm tra kết quả trả về đủ field không.
+//            BaseResponse validateAuth1Error = ServiceUtils.validate(ObjectAndJsonUtils.fromObject(auth1Response, Auth1Out.class), SuccessGroup.class);
+//            if (!validateAuth1Error.getCode().equals(ApiError.OK_CODE)) {
+//                log.error("{}:{}", location + "#After call Auth-1", validateAuth1Error);
+//                response.setError(new ApiError(validateAuth1Error.getCode(), validateAuth1Error.getDesc()));
+//                return response;
+//            }
+//
+//            // Call Auth-3 api
+//            // Chuyển đổi sang định dạng yyyyMMddHHmmss
+//            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+//
+//            AuthOTPResponse auth3Response = null;
+//            try {
+//                auth3Response = authenClient.confirmOTP(location,
+//                        AuthRequest.builder()
+//                                   .username(auth1Response.getUsername())
+//                                   .sessionId(auth1Response.getSessionId())
+//                                   .otp(requestData.getOtp())
+//                                   .transTime(sdf.format(new Date()))
+//                                   .transId(requestData.getTransactionId())
+//                                   .build(),
+//                        request.getHeader());
+//            } catch (Exception e) {
+//                throw new RestClientException(location, e);
+//            }
+//            error = auth3Response.getError();
+//            if (error != null) {
+//                log.error("{}:{}", location + "#After call Auth-3", error);
+//                response.setError(error);
+//                return response;
+//            }
+//
+//            // Kiểm tra kết quả trả về đủ field không.
+//            BaseResponse validateAuth3Error = ServiceUtils.validate(ObjectAndJsonUtils.fromObject(auth3Response, Auth3Out.class), SuccessGroup.class);
+//            if (!validateAuth3Error.getCode().equals(ApiError.OK_CODE)) {
+//                log.error("{}:{}", location + "#After call Auth-3", validateAuth3Error);
+//                response.setError(new ApiError(validateAuth3Error.getCode(), validateAuth3Error.getDesc()));
+//                return response;
+//            }
+//
             TransactionInfo transactionInfo = TransactionInfo.builder()
-                                                             .transactionId(requestData.getCustomerID() + "-" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()))
+                                                             .transactionId(requestData.getTransactionId())
                                                              .customerId(requestData.getCustomerID())
                                                              .otp(requestData.getOtp())
                                                              .approvalMethod("SOFTOTP")
@@ -146,10 +148,10 @@ public class FTInsideService {
                 log.error("insert failed", e);
                 throw new InsertFailedException(e);
             }
+            HashMap<String, Object> params = new HashMap<>();
 
             // Call T2405 api
-
-            T24FundTransferResponse t2405Response = t24UtilClient.fundTransfer(location,
+                T24FundTransferResponse t2405Response = t24UtilClient.fundTransfer(location,
                         T24Request.builder()
                                   .transactionId(requestData.getTransactionId())
                                   .debitAccount(requestData.getDebitAccount())
@@ -161,29 +163,42 @@ public class FTInsideService {
                                   .channel("EBANK")
                                   .build(),
                         request.getHeader());
-            log.warn("{}{}", t2405Response.getTransactionNO(), t2405Response.getResponseCode());
 
-
-            HashMap<String, Object> params = new HashMap<>();
+            log.warn("#{}{}", t2405Response.getTransactionNO(), t2405Response.getResponseCode());
 
             error = t2405Response.getError();
             if (error != null) {
-                log.error("{}:{}", location + "#After call T2405", error);
-                params.put("status", ApiConstant.STATUS.ERROR);
-                try {
-                    transactionInfoDAO.update(transactionInfo.getTransactionId(), params);
-                } catch (Exception e) {
-                    throw new UpdateFailedException(e);
+                // Trường hợp timeout
+                if("998".equals(error.getCode())) {
+                    log.error("#{}:{}", location + "#After call T2405", error);
+                    params.put("status", TransactionStatus.CONSOLIDATION.toString());
+                    try {
+                        transactionInfoDAO.update(transactionInfo.getTransactionId(), params);
+                    } catch (Exception e) {
+                        throw new UpdateFailedException(e);
+                    }
+                    response.setError(error);
+                    return response;
                 }
-                response.setError(error);
-                return response;
+                // Trường hợp lỗi khác
+                else {
+                    log.error("#{}:{}", location + "#After call T2405", error);
+                    params.put("status", TransactionStatus.ERROR.toString());
+                    try {
+                        transactionInfoDAO.update(transactionInfo.getTransactionId(), params);
+                    } catch (Exception e) {
+                        throw new UpdateFailedException(e);
+                    }
+                    response.setError(error);
+                    return response;
+                }
             }
 
             // Kiểm tra kết quả trả về đủ field không.
             BaseResponse validateT2505Error = ServiceUtils.validate(ObjectAndJsonUtils.fromObject(t2405Response, FundsTransferOut.class), SuccessGroup.class);
             if (!validateT2505Error.getCode().equals(ApiError.OK_CODE)) {
-                log.error("{}:{}", location + "#After call T2405", validateT2505Error);
-                params.put("status", ApiConstant.STATUS.ERROR);
+                log.error("#{}:{}", location + "#After call T2405", validateT2505Error);
+                params.put("status", TransactionStatus.ERROR.toString());
                 try {
                     transactionInfoDAO.update(transactionInfo.getTransactionId(), params);
                 } catch (Exception e) {
@@ -196,7 +211,7 @@ public class FTInsideService {
             params.put("response_code", t2405Response.getResponseCode());
             params.put("bank_trans_id", t2405Response.getTransactionNO());
             params.put("last_update", new Date());
-            params.put("status", ApiConstant.STATUS.DONE);
+            params.put("status", TransactionStatus.DONE.toString());
 
             // Cập nhật thông tin vào db Transaction_info
             try {
@@ -209,6 +224,6 @@ public class FTInsideService {
             body.put("transaction", t2405Response);
             response.setBody(body);
             return response;
-        }, req, "FundsTransferOutSide/" + requestData.getSessionId() + "/" + System.currentTimeMillis());
+        }, req, "#FundsTransferOutSide/" + requestData.getSessionId() + "/" + System.currentTimeMillis());
     }
 }
