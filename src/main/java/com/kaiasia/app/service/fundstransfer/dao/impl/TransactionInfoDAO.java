@@ -9,10 +9,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -75,10 +72,10 @@ public class TransactionInfoDAO implements ITransactionInfoDAO {
     }
 
     @Override
-    public TransactionInfo getTransactionInfo(String status) throws Exception {
-        String sql = "select * from " + tableName + " where status = :status limit 1";
+    public List<TransactionInfo> getTransactionInfoByStatus(String status, int limit) throws Exception {
+        String sql = "select * from " + tableName + " where status = :status limit " + limit + " for update skip locked";
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("status", status);
-        return posgrestDAOHelper.querySingle(sql, paramMap, new BeanPropertyRowMapper<>(TransactionInfo.class));
+        return posgrestDAOHelper.query(sql, paramMap, new BeanPropertyRowMapper<>(TransactionInfo.class));
     }
 }
