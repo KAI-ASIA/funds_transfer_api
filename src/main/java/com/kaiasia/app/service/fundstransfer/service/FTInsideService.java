@@ -53,12 +53,12 @@ public class FTInsideService {
     private final AuthenClient authenClient;
     private final T24UtilClient t24UtilClient;
 
-    @KaiMethod(name = "FTInsideService", type = Register.VALIDATE)
+    @KaiMethod(name = "KAI.API.FT.IN", type = Register.VALIDATE)
     public ApiError validate(ApiRequest req) {
         return ServiceUtils.validate(req, FundsTransferIn.class, apiErrorUtils, "TRANSACTION", FundsTransferOptional.class);
     }
 
-    @KaiMethod(name = "FTInsideService")
+    @KaiMethod(name = "KAI.API.FT.IN")
     public ApiResponse process(ApiRequest req) throws Exception {
         FundsTransferIn requestData = ObjectAndJsonUtils.fromObject(req
                 .getBody()

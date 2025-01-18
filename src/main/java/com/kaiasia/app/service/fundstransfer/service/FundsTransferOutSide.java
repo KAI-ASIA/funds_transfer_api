@@ -1,7 +1,5 @@
 package com.kaiasia.app.service.fundstransfer.service;
 
-import com.kaiasia.app.core.utils.ApiConstant;
-import com.kaiasia.app.core.utils.AppConfigPropertiesUtils;
 import com.kaiasia.app.core.utils.GetErrorUtils;
 import com.kaiasia.app.register.KaiMethod;
 import com.kaiasia.app.register.KaiService;
@@ -29,7 +27,6 @@ import ms.apiclient.authen.AuthTakeSessionResponse;
 import ms.apiclient.authen.AuthenClient;
 import ms.apiclient.model.*;
 import ms.apiclient.t24util.*;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
@@ -58,12 +55,12 @@ public class FundsTransferOutSide {
     @Value("${kai.name}")
     private String requestApi;
 
-    @KaiMethod(name = "FundsTransferOutSide", type = Register.VALIDATE)
-    public ApiError validate(ApiRequest request) {
+    @KaiMethod(name = "KAI.API.FT.OUT", type = Register.VALIDATE)
+    public ApiError validate(ApiRequest request) throws Exception {
         return ServiceUtils.validate(request, FundsTransferIn.class, getErrorUtils, "TRANSACTION", FundsTransferOptional.class);
     }
 
-    @KaiMethod(name = "FundsTransferOutSide")
+    @KaiMethod(name = "KAI.API.FT.OUT")
     public ApiResponse process(ApiRequest request) {
         FundsTransferIn requestTransaction = ObjectAndJsonUtils.fromObject(request.getBody().get("transaction"), FundsTransferIn.class);
         String location = "FundsTransferOutSide_" + requestTransaction.getSessionId() + "_" + System.currentTimeMillis();
@@ -82,7 +79,7 @@ public class FundsTransferOutSide {
             AuthTakeSessionResponse authTakeSessionResponse = authenClient.takeSession(location, AuthRequest.builder()
                     .sessionId(requestTransaction.getSessionId()).build(), header);
             error = authTakeSessionResponse.getError();
-            if (error != null) {
+            if (!ApiError.OK_CODE.equals(error.getCode())) {
                 log.error("{}#{}", location + "#After call Auth-1", error);
                 response.setError(error);
                 return response;
@@ -97,7 +94,7 @@ public class FundsTransferOutSide {
                     .transId(requestTransaction.getTransactionId())
                     .build(), header);
             error = authOTPResponse.getError();
-            if (error != null) {
+            if (!ApiError.OK_CODE.equals(error.getCode())) {
                 log.error("{}:{}", location + "#After call Auth-3", error);
                 response.setError(error);
                 return response;
@@ -130,7 +127,7 @@ public class FundsTransferOutSide {
 
             error = t24FundTransferResponse.getError();
             HashMap<String, Object> params = new HashMap();
-            if (error != null) {
+            if (!ApiError.OK_CODE.equals(error.getCode())) {
                 params.put("response_code", error.getCode());
                 params.put("response_str", error.getDesc());
                 params.put("status", TransactionStatus.ERROR);
@@ -145,7 +142,6 @@ public class FundsTransferOutSide {
             }
             params.put("response_code", t24FundTransferResponse.getResponseCode());
             params.put("bank_trans_id", t24FundTransferResponse.getTransactionNO());
-            params.put("last_update", new Date());
             try {
                 transactionInfoDAO.update(transactionInfo.getTransactionId(), params);
             } catch (Exception e) {
@@ -171,7 +167,7 @@ public class FundsTransferOutSide {
 
             ApiResponse napas2Response = ApiCallHelper.call(napasApiProperties.getUrl(), HttpMethod.POST, ObjectAndJsonUtils.toJson(napas2Request), ApiResponse.class, napasApiProperties.getTimeout());
             error = napas2Response.getError();
-            if (error != null || !"OK".equals(napas2Response.getBody().get("status"))) {
+            if (!ApiError.OK_CODE.equals(error.getCode())) {
                 log.error("{}:{}", location + "#After call Napas2", error);
                 // TODO: revert giao dich
             }
