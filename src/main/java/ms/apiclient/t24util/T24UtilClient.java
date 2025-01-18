@@ -59,7 +59,7 @@ public class T24UtilClient extends ApiCallClient {
 
     public T24ChangePasswordResponse changePassword(String location, T24Request t24request, ApiHeader header) throws RestClientException {
         t24request.setAuthenType("KAI.API.USER.CHANGEPASS");
-        ApiRequest apiReq = buildENQUIRY(t24request, header);
+        ApiRequest apiReq = buildTransaction(t24request, header);
         return this.call(location, apiReq, T24ChangePasswordResponse.class);
     }
 }
