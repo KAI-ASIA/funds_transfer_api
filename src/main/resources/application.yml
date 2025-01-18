@@ -70,3 +70,7 @@ dep-api:
     url: http://localhost:8025/NAPAS_API/process
     timeout: 60000
     apiKey: napas861klfoni1ezxl5f2ck771
+job:
+  consolidation:
+    numOfThread: 5
+    period: 30 #sec

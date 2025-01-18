@@ -8,10 +8,11 @@ import com.kaiasia.app.service.fundstransfer.configuration.DepApiConfig;
 import com.kaiasia.app.service.fundstransfer.configuration.DepApiProperties;
 import com.kaiasia.app.service.fundstransfer.configuration.KaiApiRequestBuilderFactory;
 import com.kaiasia.app.service.fundstransfer.dao.ITransactionInfoDAO;
+import com.kaiasia.app.service.fundstransfer.exception.ApiErrorCode;
 import com.kaiasia.app.service.fundstransfer.exception.ExceptionHandler;
 import com.kaiasia.app.service.fundstransfer.exception.InsertFailedException;
 import com.kaiasia.app.service.fundstransfer.exception.UpdateFailedException;
-import com.kaiasia.app.service.fundstransfer.model.TransactionInfo;
+import com.kaiasia.app.service.fundstransfer.model.entity.TransactionInfo;
 import com.kaiasia.app.service.fundstransfer.model.enums.TransactionStatus;
 import com.kaiasia.app.service.fundstransfer.model.request.FundsTransferIn;
 import com.kaiasia.app.service.fundstransfer.model.request.Napas2In;
@@ -73,8 +74,8 @@ public class FundsTransferOutSide {
 
             origHeader.setReqType("RESPONSE");
             response.setHeader(origHeader);
-            // Call Auth-1 Check Session
 
+            // Call Auth-1 Check Session
             String username = "";
             AuthTakeSessionResponse authTakeSessionResponse = authenClient.takeSession(location, AuthRequest.builder()
                     .sessionId(requestTransaction.getSessionId()).build(), header);
@@ -126,11 +127,11 @@ public class FundsTransferOutSide {
                     .build(), header);
 
             error = t24FundTransferResponse.getError();
-            HashMap<String, Object> params = new HashMap();
+            HashMap<String, Object> params = new HashMap<>();
             if (!ApiError.OK_CODE.equals(error.getCode())) {
                 params.put("response_code", error.getCode());
                 params.put("response_str", error.getDesc());
-                params.put("status", TransactionStatus.ERROR);
+                params.put("status", error.getCode().equals(ApiErrorCode.TIMEOUT) ? TransactionStatus.CONSOLIDATION.name() : TransactionStatus.ERROR.name());
                 log.error("{}:{}", location + "#After call T2405", error);
                 try {
                     transactionInfoDAO.update(transactionInfo.getTransactionId(), params);
@@ -168,8 +169,19 @@ public class FundsTransferOutSide {
             ApiResponse napas2Response = ApiCallHelper.call(napasApiProperties.getUrl(), HttpMethod.POST, ObjectAndJsonUtils.toJson(napas2Request), ApiResponse.class, napasApiProperties.getTimeout());
             error = napas2Response.getError();
             if (!ApiError.OK_CODE.equals(error.getCode())) {
+                params = new HashMap<>();
                 log.error("{}:{}", location + "#After call Napas2", error);
-                // TODO: revert giao dich
+                params.put("response_code", error.getCode());
+                params.put("response_str", error.getDesc());
+                params.put("status", error.getCode().equals(ApiErrorCode.TIMEOUT) ? TransactionStatus.CONSOLIDATION.name() : TransactionStatus.ERROR.name());
+                log.error("{}:{}", location + "#After call T2405", error);
+                try {
+                    transactionInfoDAO.update(transactionInfo.getTransactionId(), params);
+                } catch (Exception e) {
+                    throw new UpdateFailedException(e);
+                }
+                response.setError(error);
+                return response;
             }
 
             // build success body
