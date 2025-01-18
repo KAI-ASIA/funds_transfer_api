@@ -2,6 +2,7 @@ package com.kaiasia.app.service.fundstransfer.dao;
 
 import com.kaiasia.app.service.fundstransfer.model.entity.TransactionInfo;
 
+import java.util.List;
 import java.util.Map;
 
 public interface ITransactionInfoDAO {
@@ -11,6 +12,6 @@ public interface ITransactionInfoDAO {
 
      boolean checkExistTransactionId(String transactionId) throws Exception;
 
-     TransactionInfo getTransactionInfo(String status) throws Exception;
+     List<TransactionInfo> getTransactionInfoByStatus(String status, int limit) throws Exception;
 
 }

@@ -45,6 +45,10 @@ spring:
   jpa:
     show-sql: false
     open-in-view: false
+  redis:
+    host: 14.225.254.212
+    port: 6379
+    queueName: consolidationFTQueue
 #eureka:
 #  client:
 #    service-url:

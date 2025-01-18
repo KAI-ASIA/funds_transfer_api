@@ -12,9 +12,11 @@ import ms.apiclient.t24util.T24Request;
 import ms.apiclient.t24util.T24UtilClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
 
 @Slf4j
@@ -24,9 +26,10 @@ public class ConsolidationFTTask implements Runnable {
     private ITransactionInfoDAO transactionInfoDAO;
     @Autowired
     private T24UtilClient t24UtilClient;
+    @Autowired
+    private ConsolidationFTQueue queueJob;
     @Value("${kai.name}")
     private String requestApi;
-
 
     @Override
     public void run() {
@@ -35,7 +38,7 @@ public class ConsolidationFTTask implements Runnable {
         log.info("Start Consolidation Job - {}", location);
         TransactionInfo transactionInfo;
         try {
-            transactionInfo = transactionInfoDAO.getTransactionInfo(TransactionStatus.CONSOLIDATION.name());
+            transactionInfo = queueJob.getFromQueue();
         } catch (Exception e) {
             log.error("{} : Error getting transaction info", location, e);
             try {
@@ -66,9 +69,8 @@ public class ConsolidationFTTask implements Runnable {
             log.error("{} : Call T24Api failed : {}", location, error);
             return;
         }
-
+        log.info("{}: T24Response {}", location, response);
         String responseCode = response.getResponseCode();
-
 
         HashMap<String, Object> params = new HashMap<>();
         // ft exists but not revert
