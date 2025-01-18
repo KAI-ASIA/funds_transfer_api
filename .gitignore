@@ -35,3 +35,4 @@ build/
 ### Local Config ##
 application.yml
 /log
+/src/main/java/com/kaiasia/app/service/fundstransfer/job/
