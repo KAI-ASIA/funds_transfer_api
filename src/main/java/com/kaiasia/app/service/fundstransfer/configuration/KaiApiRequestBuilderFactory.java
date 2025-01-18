@@ -1,6 +1,6 @@
 package com.kaiasia.app.service.fundstransfer.configuration;
 
-import com.kaiasia.app.service.fundstransfer.model.KaiApiRequestBuilder;
+import com.kaiasia.app.service.fundstransfer.model.request.KaiApiRequestBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 

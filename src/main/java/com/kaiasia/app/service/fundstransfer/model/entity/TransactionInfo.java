@@ -1,4 +1,4 @@
-package com.kaiasia.app.service.fundstransfer.model;
+package com.kaiasia.app.service.fundstransfer.model.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

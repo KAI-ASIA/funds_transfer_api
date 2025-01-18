@@ -1,4 +1,4 @@
-package com.kaiasia.app.service.fundstransfer.model;
+package com.kaiasia.app.service.fundstransfer.model.request;
 
 
 import com.kaiasia.app.utils.ApiUtils;
@@ -7,6 +7,7 @@ import ms.apiclient.model.ApiHeader;
 import ms.apiclient.model.ApiRequest;
 
 
+@Deprecated
 public class KaiApiRequestBuilder {
     private final ApiRequest apiRequest;
     private ApiHeader apiHeader;
