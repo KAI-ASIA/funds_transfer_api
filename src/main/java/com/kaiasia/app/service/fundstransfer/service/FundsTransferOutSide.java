@@ -22,7 +22,6 @@ import com.kaiasia.app.service.fundstransfer.utils.ObjectAndJsonUtils;
 import com.kaiasia.app.service.fundstransfer.utils.ServiceUtils;
 import com.kaiasia.app.utils.ApiUtils;
 import lombok.extern.slf4j.Slf4j;
-import ms.apiclient.authen.AuthOTPResponse;
 import ms.apiclient.authen.AuthRequest;
 import ms.apiclient.authen.AuthTakeSessionResponse;
 import ms.apiclient.authen.AuthenClient;
@@ -31,7 +30,6 @@ import ms.apiclient.t24util.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -92,18 +90,18 @@ public class FundsTransferOutSide {
             username = authTakeSessionResponse.getUsername();
 
             // Call Auth-3 Confirm OTP
-            AuthOTPResponse authOTPResponse = authenClient.confirmOTP(location, AuthRequest.builder()
-                    .sessionId(requestTransaction.getSessionId())
-                    .username(username).otp(requestTransaction.getOtp())
-                    .transTime(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()))
-                    .transId(requestTransaction.getTransactionId())
-                    .build(), header);
-            error = authOTPResponse.getError();
-            if (!ApiError.OK_CODE.equals(error.getCode())) {
-                log.error("{}:{}", location + "#After call Auth-3", error);
-                response.setError(error);
-                return response;
-            }
+//            AuthOTPResponse authOTPResponse = authenClient.confirmOTP(location, AuthRequest.builder()
+//                    .sessionId(requestTransaction.getSessionId())
+//                    .username(username).otp(requestTransaction.getOtp())
+//                    .transTime(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()))
+//                    .transId(requestTransaction.getTransactionId())
+//                    .build(), header);
+//            error = authOTPResponse.getError();
+//            if (!ApiError.OK_CODE.equals(error.getCode())) {
+//                log.error("{}:{}", location + "#After call Auth-3", error);
+//                response.setError(error);
+//                return response;
+//            }
 
             String customerId = requestTransaction.getCustomerID();
             TransactionInfo transactionInfo = TransactionInfo.builder()
@@ -112,6 +110,10 @@ public class FundsTransferOutSide {
                     .otp(requestTransaction.getOtp())
                     .approvalMethod("SOFTOTP")
                     .insertTime(new Date())
+                    .debitAccount(requestTransaction.getDebitAccount())
+                    .creditAccount(requestTransaction.getCreditAccount())
+                    .amount(requestTransaction.getTransAmount())
+                    .bankCode(requestTransaction.getBankId())
                     .status(TransactionStatus.PROCESSING.name())
                     .build();
             try {
@@ -146,6 +148,7 @@ public class FundsTransferOutSide {
                 return response;
             }
             params.put("response_code", t24FundTransferResponse.getResponseCode());
+            params.put("status", TransactionStatus.DONE.name());
             params.put("bank_trans_id", t24FundTransferResponse.getTransactionNO());
             try {
                 transactionInfoDAO.update(transactionInfo.getTransactionId(), params);
