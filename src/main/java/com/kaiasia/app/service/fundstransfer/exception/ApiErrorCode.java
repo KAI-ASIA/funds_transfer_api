@@ -16,5 +16,4 @@ public abstract class ApiErrorCode {
     public static String FAILED_TO_READ_FROM_DB = "503";
     public static String FAILED_TO_DELETE_FROM_DB = "504";
     public static String FAILED_TO_CALL_API = "505";
-
 }

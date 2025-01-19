@@ -9,8 +9,10 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class ObjectAndJsonUtils {
-    private final static ObjectMapper mapper = new ObjectMapper();
-    private final static ObjectWriter writer = mapper.writerWithDefaultPrettyPrinter();
+    private static final  ObjectMapper mapper = new ObjectMapper();
+    private static final  ObjectWriter writer = mapper.writerWithDefaultPrettyPrinter();
+
+    private ObjectAndJsonUtils() {}
 
     public static ObjectMapper getObjectMapper() {
         return mapper;
