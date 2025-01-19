@@ -1,13 +1,9 @@
 package com.kaiasia.app.service.fundstransfer.job;
 
 import com.kaiasia.app.service.fundstransfer.dao.ITransactionInfoDAO;
-import com.kaiasia.app.service.fundstransfer.dao.impl.TransactionInfoDAO;
 import com.kaiasia.app.service.fundstransfer.model.entity.TransactionInfo;
 import com.kaiasia.app.service.fundstransfer.model.enums.TransactionStatus;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -18,12 +14,16 @@ import java.util.concurrent.*;
 @Component
 @Slf4j
 public class ConsolidationFTJob {
-    @Autowired
-    private ConsolidationFTTask task;
-    @Autowired
-    private ITransactionInfoDAO transactionInfoDAO;
-    @Autowired
-    private ConsolidationFTQueue queue;
+    private final ConsolidationFTTask task;
+    private final ITransactionInfoDAO transactionInfoDAO;
+    private final ConsolidationFTQueue queue;
+
+    public ConsolidationFTJob(ConsolidationFTTask task, ConsolidationFTQueue queue, ITransactionInfoDAO transactionInfoDAO) {
+        this.task = task;
+        this.queue = queue;
+        this.transactionInfoDAO = transactionInfoDAO;
+    }
+
     @Value("${job.consolidation.numOfThread}")
     private int numOfThread;
     @Value("${job.consolidation.period}")
@@ -42,24 +42,24 @@ public class ConsolidationFTJob {
         while (true) {
             try {
                 List<TransactionInfo> transactionInfos = transactionInfoDAO.getTransactionInfoByStatus(TransactionStatus.CONSOLIDATION.name(), numOfThread);
-                transactionInfos.forEach(transactionInfo -> {
-                    queue.addToQueue(transactionInfo);
-                });
+                transactionInfos.forEach(queue::addToQueue);
                 Thread.sleep(period * 1000L);
             } catch (Exception e) {
                 log.error("Failed to fetch consolidation FT", e);
+                Thread.currentThread().interrupt();
             }
         }
     }
 
     private void doConsolidationFTTask() {
-        log.info("Start doing consolidation FT ");
+        log.info("Start processing consolidation FT ");
         while (true) {
             if (queue.size() == 0) {
                 try {
                     Thread.sleep(period * 1000L);
                 } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
+
+                    Thread.currentThread().interrupt();
                 }
                 continue;
             }

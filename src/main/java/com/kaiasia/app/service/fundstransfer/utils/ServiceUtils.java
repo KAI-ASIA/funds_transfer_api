@@ -16,18 +16,21 @@ import java.util.stream.Collectors;
 public class ServiceUtils {
     private static final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
+    private ServiceUtils() {
+    }
+
     /**
      * Kiểm tra tính hợp lệ của đối tượng yêu cầu dựa trên một chuẩn được chỉ định, đảm bảo cấu trúc và nội dung của nó tuân thủ các ràng buộc đã định nghĩa.
      *
-     * @param <T>           Kiểu của đối tượng cần kiểm tra.
-     * @param req           Đối tượng yêu cầu API cần kiểm tra.
-     * @param clazz         Lớp được sử dụng để kiểm tra tính hợp lệ.
-     * @param apiErrorUtils Tiện ích để tạo thông báo lỗi.
+     * @param <T>            Kiểu của đối tượng cần kiểm tra.
+     * @param req            Đối tượng yêu cầu API cần kiểm tra.
+     * @param clazz          Lớp được sử dụng để kiểm tra tính hợp lệ.
+     * @param apiErrorUtils  Tiện ích để tạo thông báo lỗi.
      * @param transOrEnquiry Phần trong nội dung yêu cầu cần kiểm tra, ví dụ: "TRANSACTION" hoặc "ENQUIRY".
-     * @param groups Chuẩn đối chiếu validate.
+     * @param groups         Chuẩn đối chiếu validate.
      * @return Trả về đối tượng ApiError, chứa mã lỗi và mô tả lỗi nếu không hợp lệ; ngược lại trả về mã 000 nếu hợp lệ.
-     * @since 1.1
      * @author Phạm Huy Hoàng
+     * @since 1.1
      */
     public static <T> ApiError validate(ApiRequest req, Class<T> clazz, GetErrorUtils apiErrorUtils, String transOrEnquiry, Class<?>... groups) {
         try {
@@ -45,8 +48,8 @@ public class ServiceUtils {
 
             if (!violations.isEmpty()) {
                 String errorMessage = violations.stream()
-                                                .map(violation -> violation.getPropertyPath() + ": " + violation.getMessage())
-                                                .collect(Collectors.joining(", "));
+                        .map(violation -> violation.getPropertyPath() + ": " + violation.getMessage())
+                        .collect(Collectors.joining(", "));
                 return apiErrorUtils.getError("804", new String[]{"Validation failed: " + errorMessage});
             }
 
@@ -60,15 +63,15 @@ public class ServiceUtils {
     /**
      * Kiểm tra tính hợp lệ của phản hồi API dựa trên một chuẩn được chỉ định, đảm bảo cấu trúc và nội dung của nó tuân thủ các ràng buộc đã định nghĩa.
      *
-     * @param <T>           Kiểu của đối tượng cần kiểm tra.
-     * @param req           Đối tượng phản hồi API cần kiểm tra.
-     * @param clazz         Lớp được sử dụng để kiểm tra tính hợp lệ.
-     * @param apiErrorUtils Tiện ích để tạo thông báo lỗi.
+     * @param <T>            Kiểu của đối tượng cần kiểm tra.
+     * @param req            Đối tượng phản hồi API cần kiểm tra.
+     * @param clazz          Lớp được sử dụng để kiểm tra tính hợp lệ.
+     * @param apiErrorUtils  Tiện ích để tạo thông báo lỗi.
      * @param transOrEnquiry Phần trong nội dung phản hồi cần kiểm tra, ví dụ: "TRANSACTION" hoặc "ENQUIRY".
-     * @param groups Chuẩn đối chiếu validate.
+     * @param groups         Chuẩn đối chiếu validate.
      * @return Trả về đối tượng ApiError, chứa mã lỗi và mô tả lỗi nếu không hợp lệ; ngược lại trả về mã 000 nếu hợp lệ.
-     * @since 1.1
      * @author Phạm Huy Hoàng
+     * @since 1.1
      */
     public static <T> ApiError validate(ApiResponse req, Class<T> clazz, GetErrorUtils apiErrorUtils, String transOrEnquiry, Class<?>... groups) {
         try {
@@ -86,8 +89,8 @@ public class ServiceUtils {
 
             if (!violations.isEmpty()) {
                 String errorMessage = violations.stream()
-                                                .map(violation -> violation.getPropertyPath() + ": " + violation.getMessage())
-                                                .collect(Collectors.joining(", "));
+                        .map(violation -> violation.getPropertyPath() + ": " + violation.getMessage())
+                        .collect(Collectors.joining(", "));
                 return apiErrorUtils.getError("804", new String[]{"Validation failed: " + errorMessage});
             }
 
@@ -100,27 +103,27 @@ public class ServiceUtils {
     /**
      * Kiểm tra tính hợp lệ của 1 đối tượng dựa trên một chuẩn được chỉ định, đảm bảo cấu trúc và nội dung của nó tuân thủ các ràng buộc đã định nghĩa.
      *
-     * @param <T>           Kiểu của đối tượng cần kiểm tra.
+     * @param <T>    Kiểu của đối tượng cần kiểm tra.
      * @param groups Chuẩn đối chiếu validate.
      * @return Trả về đối tượng BaseResponse, chứa mã lỗi và mô tả lỗi nếu không hợp lệ; ngược lại trả về mã 000 nếu hợp lệ.
-     * @since 1.0
      * @author Phạm Huy Hoàng
+     * @since 1.0
      */
     public static <T> BaseResponse validate(T input, Class<?>... groups) {
-            Set<ConstraintViolation<T>> violations = validator.validate(input, groups);
-            if (!violations.isEmpty()) {
-                String errorMessage = violations.stream()
-                                                .map(violation -> violation.getPropertyPath() + ": " + violation.getMessage())
-                                                .collect(Collectors.joining(", "));
-                return BaseResponse.builder()
-                                   .code("804")
-                                   .desc("Validation failed: " + errorMessage)
-                                   .build();
-            }
+        Set<ConstraintViolation<T>> violations = validator.validate(input, groups);
+        if (!violations.isEmpty()) {
+            String errorMessage = violations.stream()
+                    .map(violation -> violation.getPropertyPath() + ": " + violation.getMessage())
+                    .collect(Collectors.joining(", "));
             return BaseResponse.builder()
-                               .code("000")
-                               .desc("OK")
-                               .build();
+                    .code("804")
+                    .desc("Validation failed: " + errorMessage)
+                    .build();
+        }
+        return BaseResponse.builder()
+                .code("000")
+                .desc("OK")
+                .build();
     }
 
 }

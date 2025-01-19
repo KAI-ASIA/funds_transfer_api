@@ -10,24 +10,24 @@ import ms.apiclient.model.ApiHeader;
 import ms.apiclient.t24util.T24FTExistsResponse;
 import ms.apiclient.t24util.T24Request;
 import ms.apiclient.t24util.T24UtilClient;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
-import java.util.concurrent.TimeUnit;
-
 
 @Slf4j
 @Component
 public class ConsolidationFTTask implements Runnable {
-    @Autowired
-    private ITransactionInfoDAO transactionInfoDAO;
-    @Autowired
-    private T24UtilClient t24UtilClient;
-    @Autowired
-    private ConsolidationFTQueue queueJob;
+    private final ITransactionInfoDAO transactionInfoDAO;
+    private final T24UtilClient t24UtilClient;
+    private final ConsolidationFTQueue queueJob;
+
+    public ConsolidationFTTask(ITransactionInfoDAO transactionInfoDAO, T24UtilClient t24UtilClient, ConsolidationFTQueue queueJob) {
+        this.transactionInfoDAO = transactionInfoDAO;
+        this.t24UtilClient = t24UtilClient;
+        this.queueJob = queueJob;
+    }
+
     @Value("${kai.name}")
     private String requestApi;
 
@@ -35,18 +35,18 @@ public class ConsolidationFTTask implements Runnable {
     public void run() {
         // query ft with status = consolidation
         String location = "ConsolidationFTTask_" + System.currentTimeMillis();
-        log.info("Start Consolidation Job - {}", location);
-        TransactionInfo transactionInfo;
+        log.info("Start Consolidation Task - {}", location);
+        TransactionInfo transactionInfo = null;
         try {
             transactionInfo = queueJob.getFromQueue();
         } catch (Exception e) {
-            log.error("{} : Error getting transaction info", location, e);
+            log.error("{} : Error getting transaction from queue", location, e);
             try {
                 Thread.sleep(15000);
             } catch (InterruptedException ex) {
-                throw new RuntimeException(ex);
+                Thread.currentThread().interrupt();
             }
-            throw new RuntimeException(e);
+            Thread.currentThread().interrupt();
         }
 
         if (transactionInfo == null) {
@@ -72,84 +72,45 @@ public class ConsolidationFTTask implements Runnable {
         log.info("{}: T24Response {}", location, response);
         String responseCode = response.getResponseCode();
 
-        HashMap<String, Object> params = new HashMap<>();
         // ft exists but not revert
         if ("00".equals(responseCode)) {
             if ("300".equals(transactionInfo.getBankCode())) {
-                params.put("status", TransactionStatus.DONE.name());
-                try {
-                    transactionInfoDAO.update(transactionInfo.getTransactionId(), params);
-                } catch (Exception e) {
-                    log.error("{}: Error updating transaction info - {}", location, transactionInfo.getTransactionId(), e);
-                    try {
-                        Thread.sleep(15000);
-                    } catch (InterruptedException ex) {
-                        throw new RuntimeException(ex);
-                    }
-                    throw new RuntimeException(e);
-                }
+                update(location, transactionInfo.getTransactionId(), TransactionStatus.DONE.name());
                 return;
             }
-            try {
-                // TODO: revert - call t24
 
+            // revert - call t24
 
-                // update if success
-                params.put("status", TransactionStatus.REVERT.name());
-                try {
-                    transactionInfoDAO.update(transactionInfo.getTransactionId(), params);
-                } catch (Exception e) {
-                    log.error("{}: Error updating transaction info - {}", location, transactionInfo.getTransactionId(), e);
-                    try {
-                        Thread.sleep(15000);
-                    } catch (InterruptedException ex) {
-                        throw new RuntimeException(ex);
-                    }
-                    throw new RuntimeException(e);
-                }
-            } catch (Exception e) {
-                log.error("{}: Error updating transaction info - {}", location, transactionInfo.getTransactionId(), e);
-                try {
-                    Thread.sleep(15000);
-                } catch (InterruptedException ex) {
-                    throw new RuntimeException(ex);
-                }
-                throw new RuntimeException(e);
-            }
+            // update if success
+            update(location, transactionInfo.getTransactionId(), TransactionStatus.REVERT.name());
             return;
         }
 
         // ft revert
         if ("01".equals(responseCode)) {
-            params.put("status", TransactionStatus.REVERT.name());
-            try {
-                transactionInfoDAO.update(transactionInfo.getTransactionId(), params);
-            } catch (Exception e) {
-                log.error("{}: Error updating transaction info - {}", location, transactionInfo.getTransactionId(), e);
-                try {
-                    Thread.sleep(15000);
-                } catch (InterruptedException ex) {
-                    throw new RuntimeException(ex);
-                }
-                throw new RuntimeException(e);
-            }
+            update(location, transactionInfo.getTransactionId(), TransactionStatus.REVERT.name());
             return;
         }
 
         // ft not exists
         if ("02".equals(responseCode)) {
-            params.put("status", TransactionStatus.ERROR.name());
+            update(location, transactionInfo.getTransactionId(), TransactionStatus.ERROR.name());
+        }
+    }
+
+    private void update(String location, String transactionId, String status) {
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("status", status);
+        try {
+            transactionInfoDAO.update(transactionId, params);
+        } catch (Exception e) {
+            log.error("{}: Error updating transaction info - {}", location, transactionId, e);
             try {
-                transactionInfoDAO.update(transactionInfo.getTransactionId(), params);
-            } catch (Exception e) {
-                log.error("{}: Error updating transaction info - {}", location, transactionInfo.getTransactionId(), e);
-                try {
-                    Thread.sleep(15000);
-                } catch (InterruptedException ex) {
-                    throw new RuntimeException(ex);
-                }
-                throw new RuntimeException(e);
+                Thread.sleep(15000);
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
             }
+            Thread.currentThread().interrupt();
         }
     }
 }

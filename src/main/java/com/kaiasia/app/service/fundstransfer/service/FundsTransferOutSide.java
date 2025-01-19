@@ -28,7 +28,6 @@ import ms.apiclient.authen.AuthTakeSessionResponse;
 import ms.apiclient.authen.AuthenClient;
 import ms.apiclient.model.*;
 import ms.apiclient.t24util.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 
@@ -39,25 +38,30 @@ import java.util.HashMap;
 @KaiService
 @Slf4j
 public class FundsTransferOutSide {
-    @Autowired
-    private GetErrorUtils getErrorUtils;
-    @Autowired
-    private DepApiConfig depApiConfig;
-    @Autowired
-    private KaiApiRequestBuilderFactory kaiApiRequestBuilderFactory;
-    @Autowired
-    private ITransactionInfoDAO transactionInfoDAO;
-    @Autowired
-    private ExceptionHandler exceptionHandler;
-    @Autowired
-    private T24UtilClient t24UtilClient;
-    @Autowired
-    AuthenClient authenClient;
+    private final GetErrorUtils getErrorUtils;
+    private final DepApiConfig depApiConfig;
+    private final KaiApiRequestBuilderFactory kaiApiRequestBuilderFactory;
+    private final ITransactionInfoDAO transactionInfoDAO;
+    private final ExceptionHandler exceptionHandler;
+    private final T24UtilClient t24UtilClient;
+    private final AuthenClient authenClient;
     @Value("${kai.name}")
     private String requestApi;
 
+    public FundsTransferOutSide(GetErrorUtils getErrorUtils, DepApiConfig depApiConfig, KaiApiRequestBuilderFactory kaiApiRequestBuilderFactory,
+                                ITransactionInfoDAO transactionInfoDAO, ExceptionHandler exceptionHandler,
+                                T24UtilClient t24UtilClient, AuthenClient authenClient) {
+        this.getErrorUtils = getErrorUtils;
+        this.depApiConfig = depApiConfig;
+        this.kaiApiRequestBuilderFactory = kaiApiRequestBuilderFactory;
+        this.transactionInfoDAO = transactionInfoDAO;
+        this.exceptionHandler = exceptionHandler;
+        this.t24UtilClient = t24UtilClient;
+        this.authenClient = authenClient;
+    }
+
     @KaiMethod(name = "KAI.API.FT.OUT", type = Register.VALIDATE)
-    public ApiError validate(ApiRequest request) throws Exception {
+    public ApiError validate(ApiRequest request) {
         return ServiceUtils.validate(request, FundsTransferIn.class, getErrorUtils, "TRANSACTION", FundsTransferOptional.class);
     }
 
@@ -81,7 +85,7 @@ public class FundsTransferOutSide {
                     .sessionId(requestTransaction.getSessionId()).build(), header);
             error = authTakeSessionResponse.getError();
             if (!ApiError.OK_CODE.equals(error.getCode())) {
-                log.error("{}#{}", location + "#After call Auth-1", error);
+                log.error("{}:{}", location + "#After call Auth-1", error);
                 response.setError(error);
                 return response;
             }
@@ -174,7 +178,6 @@ public class FundsTransferOutSide {
                 params.put("response_code", error.getCode());
                 params.put("response_str", error.getDesc());
                 params.put("status", error.getCode().equals(ApiErrorCode.TIMEOUT) ? TransactionStatus.CONSOLIDATION.name() : TransactionStatus.ERROR.name());
-                log.error("{}:{}", location + "#After call T2405", error);
                 try {
                     transactionInfoDAO.update(transactionInfo.getTransactionId(), params);
                 } catch (Exception e) {
