@@ -32,6 +32,10 @@ spring:
     name: KAIASIA_FUNDS_TRANSFER
   config:
     import: optional:file:application.yml
+    async:
+      core-pool-size: 10
+      max-pool-size: 30
+      queue-capacity: 70
   database:
     postgres: true
   postgredatasource:

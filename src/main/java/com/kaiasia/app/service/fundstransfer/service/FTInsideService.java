@@ -23,10 +23,12 @@ import ms.apiclient.model.*;
 import ms.apiclient.t24util.T24FundTransferResponse;
 import ms.apiclient.t24util.T24Request;
 import ms.apiclient.t24util.T24UtilClient;
+import org.springframework.scheduling.annotation.Async;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.concurrent.CompletableFuture;
 
 @KaiService
 @Slf4j
@@ -38,6 +40,7 @@ public class FTInsideService {
     private final ExceptionHandler exceptionHandler;
     private final AuthenClient authenClient;
     private final T24UtilClient t24UtilClient;
+    private final AsyncTask asyncTask;
 
     @KaiMethod(name = "KAI.API.FT.IN", type = Register.VALIDATE)
     public ApiError validate(ApiRequest req) {
@@ -74,30 +77,34 @@ public class FTInsideService {
 
             // Call Auth-3 api
             // Chuyển đổi sang định dạng yyyyMMddHHmmss
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-
-            AuthOTPResponse auth3Response = null;
-            auth3Response = authenClient.confirmOTP(location,
-                    AuthRequest.builder()
-                               .username(auth1Response.getUsername())
-                               .sessionId(auth1Response.getSessionId())
-                               .otp(requestData.getOtp())
-                               .transTime(sdf.format(new Date()))
-                               .transId(requestData.getTransactionId())
-                               .build(),
-                    request.getHeader());
-            error = auth3Response.getError();
-            if (!ApiError.OK_CODE.equals(error.getCode())) {
-                log.error("{}:{}", location + "#After call Auth-3", error);
-                response.setError(error);
-                return response;
-            }
+//            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+//
+//            AuthOTPResponse auth3Response = null;
+//            auth3Response = authenClient.confirmOTP(location,
+//                    AuthRequest.builder()
+//                               .username(auth1Response.getUsername())
+//                               .sessionId(auth1Response.getSessionId())
+//                               .otp(requestData.getOtp())
+//                               .transTime(sdf.format(new Date()))
+//                               .transId(requestData.getTransactionId())
+//                               .build(),
+//                    request.getHeader());
+//            error = auth3Response.getError();
+//            if (!ApiError.OK_CODE.equals(error.getCode())) {
+//                log.error("{}:{}", location + "#After call Auth-3", error);
+//                response.setError(error);
+//                return response;
+//            }
 
             TransactionInfo transactionInfo = TransactionInfo.builder()
                                                              .transactionId(requestData.getTransactionId())
                                                              .customerId(requestData.getCustomerID())
+                                                             .debitAccount(requestData.getDebitAccount())
+                                                             .creditAccount(requestData.getCreditAccount())
                                                              .otp(requestData.getOtp())
                                                              .approvalMethod("SOFTOTP")
+                                                             .amount(requestData.getTransAmount())
+                                                             .bankCode("300")
                                                              .insertTime(new Date())
                                                              .status(ApiConstant.STATUS.PROCESSING)
                                                              .build();
@@ -132,6 +139,8 @@ public class FTInsideService {
                 // Trường hợp timeout
                 if("998".equals(error.getCode())) {
                     log.error("#{}:{}", location + "#After call T2405", error);
+                    params.put("response_code", t2405Response.getError().getCode());
+                    params.put("response_str", t2405Response.getError().getDesc());
                     params.put("status", TransactionStatus.CONSOLIDATION.toString());
                     try {
                         transactionInfoDAO.update(transactionInfo.getTransactionId(), params);
@@ -161,15 +170,12 @@ public class FTInsideService {
             params.put("status", TransactionStatus.DONE.toString());
 
             // Cập nhật thông tin vào db Transaction_info
-            try {
-                transactionInfoDAO.update(transactionInfo.getTransactionId(), params);
-            } catch (Exception e) {
-                throw new UpdateFailedException(e);
-            }
+            asyncTask.asyncUpdateTransaction(transactionInfo.getTransactionId(), params);
 
             header.setReqType("RESPONSE");
             body.put("transaction", t2405Response);
             response.setBody(body);
+            log.warn("##End process method.");
             return response;
         }, req, "#FundsTransferOutSide/" + requestData.getSessionId() + "/" + System.currentTimeMillis());
     }
