@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import ms.apiclient.model.ApiError;
 import ms.apiclient.model.ApiHeader;
 import ms.apiclient.t24util.T24FTExistsResponse;
+import ms.apiclient.t24util.T24FTRevertResponse;
 import ms.apiclient.t24util.T24Request;
 import ms.apiclient.t24util.T24UtilClient;
 import org.springframework.beans.factory.annotation.Value;
@@ -80,6 +81,12 @@ public class ConsolidationFTTask implements Runnable {
             }
 
             // revert - call t24
+            T24FTRevertResponse revertResponse = t24UtilClient.revertFT(location, T24Request.builder().build(), apiHeader);
+            error = revertResponse.getError();
+            if (!ApiError.OK_CODE.equals(error.getCode())) {
+                log.error("{} : Call T24Api failed : {}", location, error);
+                return;
+            }
 
             // update if success
             update(location, transactionInfo.getTransactionId(), TransactionStatus.REVERT.name());
