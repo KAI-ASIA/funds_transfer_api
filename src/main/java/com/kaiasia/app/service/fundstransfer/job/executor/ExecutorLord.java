@@ -10,6 +10,12 @@ import static java.lang.Thread.State.TERMINATED;
 import static java.lang.Thread.State.WAITING;
 import static java.lang.Thread.State.TIMED_WAITING;
 
+/**
+ * A custom implementation of {@link Executor}, that use {@code Object.wait()} method as pool mechanism
+ * @see Executor
+ * @since 20250121
+ * @author <b style="color: yellow;">lamlam</b>
+ */
 @Slf4j
 public class ExecutorLord implements Executor {
     private static final String RUNNING = "RUNNING";
