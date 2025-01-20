@@ -20,12 +20,16 @@ public class AsyncConfig {
     @Value("${spring.config.async.queue-capacity}")
     private int queueCapacity;
 
+    @Value("${spring.config.async.idleTimeout}")
+    private int idleTimeout;
+
     @Bean(name = "asyncExecutor")
     public Executor asyncExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(corePoolSize);
         executor.setMaxPoolSize(maxPoolSize);
         executor.setQueueCapacity(queueCapacity);
+        executor.setKeepAliveSeconds(idleTimeout / 10000);
         executor.setThreadNamePrefix("AsyncThread-");
         executor.initialize();
         return executor;
