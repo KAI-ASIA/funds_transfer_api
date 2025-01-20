@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Component
+//@Component
 public class Job implements InitializingBean {
     private int numberOfThread = 5;
 
