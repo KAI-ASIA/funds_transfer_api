@@ -65,12 +65,13 @@ public abstract class ApiCallClient {
 
 
     private ApiHeader rebuildHeader(ApiHeader header) {
+        header.setReqType("REQUEST");
         header.setApi(apiName);
         header.setApiKey(apiKey);
         return header;
     }
 
-    public Map<String, Object> getTransaction(ApiResponse response) {
+    public static Map<String, Object> getTransaction(ApiResponse response) {
         return (Map<String, Object>) response.getBody().get("transaction");
     }
 
