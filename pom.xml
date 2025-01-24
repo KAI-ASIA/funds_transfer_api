@@ -85,8 +85,9 @@
         <dependency>
             <groupId>ms.kaiasia.client</groupId>
             <artifactId>kai-client</artifactId>
-            <version>20250121</version>
+            <version>20250119</version>
         </dependency>
+
     </dependencies>
 
     <build>
