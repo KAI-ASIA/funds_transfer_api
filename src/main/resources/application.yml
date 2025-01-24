@@ -83,3 +83,4 @@ job:
   consolidation:
     numOfThread: 5
     period: 30 #sec
+    maxQueueSize: 50

@@ -32,6 +32,8 @@ public class ConsolidationJob {
     private int numOfThread;
     @Value("${job.consolidation.period}")
     private int period;
+    @Value("${job.consolidation.maxQueueSize}")
+    private int maxQueueSize;
     private ExecutorService executor;
 
     @PostConstruct
@@ -45,8 +47,11 @@ public class ConsolidationJob {
         log.info("Start fetching consolidation FT ");
         while (true) {
             try {
-                List<TransactionInfo> transactionInfos = transactionInfoDAO.getTransactionInfoByStatus(TransactionStatus.CONSOLIDATION.name(), numOfThread);
-                transactionInfos.forEach(queue::addToQueue);
+                if (queue.getQueueSize() < maxQueueSize) {
+                    List<TransactionInfo> transactionInfos = transactionInfoDAO.getTransactionInfoByStatus(TransactionStatus.CONSOLIDATION.name(), maxQueueSize - queue.getQueueSize());
+                    transactionInfos.forEach(queue::addToQueue);
+
+                }
                 Thread.sleep(period * 1000L);
             } catch (Exception e) {
                 log.error("Failed to fetch consolidation FT", e);

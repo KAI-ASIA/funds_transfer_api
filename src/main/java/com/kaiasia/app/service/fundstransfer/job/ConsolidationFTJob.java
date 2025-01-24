@@ -41,6 +41,7 @@ public class ConsolidationFTJob {
         log.info("Start fetching consolidation FT ");
         while (true) {
             try {
+
                 List<TransactionInfo> transactionInfos = transactionInfoDAO.getTransactionInfoByStatus(TransactionStatus.CONSOLIDATION.name(), numOfThread);
                 transactionInfos.forEach(queue::addToQueue);
                 Thread.sleep(period * 1000L);
