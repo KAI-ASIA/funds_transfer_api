@@ -87,6 +87,7 @@
             <artifactId>kai-client</artifactId>
             <version>20250119</version>
         </dependency>
+
     </dependencies>
 
     <build>
