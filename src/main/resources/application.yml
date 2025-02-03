@@ -54,6 +54,23 @@ spring:
     host: 14.225.254.212
     port: 6379
     queueName: consolidationFTQueue
+  kafka:
+    producer:
+      bootstrap-servers: localhost:9092,localhost:9090
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      #acks: all
+      acks: 1
+      retries: 10                               # Số lần retry (khuyến nghị >1 khi bật idempotence)
+      enable-idempotence: true                  # Bật idempotence mode (chê độ ghi đè lên message cũ khi retry, tránh duplicate message)
+      max-in-flight-requests-per-connection: 5  # Giới hạn tối đa số request cùng lúc gửi đi khi bật idempotence mode
+      linger-ms: 1                              # Khoảng thời gian tối đa mà producer sẽ chờ trước khi gửi 1 batch dữ liệu lên broker (cho phép producer gom thêm message
+      batch-size: 16384                         # Kích thước tối đa của 1 lô dữ liệu mà producer sẽ gom lại trước khi gửi lên broker
+      buffer-memory: 33554432
+      compression-type: snappy
+      request-timeout-ms: 30000                 # Thời gian chờ tối đa cho một request (mặc định 30000ms)
+      delivery-timeout-ms: 120000                # Tổng thời gian tối đa (gồm cả retry) cho một message (mặc định 120000ms)
+      retry-backoff-ms: 1000                    # Thời gian chờ giữa các lần retry (mặc định 100ms)
 #eureka:
 #  client:
 #    service-url:

@@ -169,7 +169,7 @@ public class FTInsideService {
             params.put("last_update", new Date());
             params.put("status", TransactionStatus.DONE.toString());
 
-            // Cập nhật thông tin vào db Transaction_info
+            // Cập nhật thông tin vào db Transaction_info theo bất đồng bộ
             asyncTask.asyncUpdateTransaction(transactionInfo.getTransactionId(), params);
 
             header.setReqType("RESPONSE");
