@@ -186,7 +186,7 @@ public class ExecutorLord implements Executor, AutoCloseable {
          * @see #notifyAll()
          */
         public void setTask(Runnable task) {
-            if (task != null) {
+            if (this.task != null) {
                 throw new IllegalStateException("Task is already set");
             }
             synchronized (this) {

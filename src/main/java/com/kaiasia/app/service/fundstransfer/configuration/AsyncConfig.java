@@ -1,5 +1,6 @@
 package com.kaiasia.app.service.fundstransfer.configuration;
 
+import com.kaiasia.app.service.fundstransfer.job.executor.ExecutorLord;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,14 +26,15 @@ public class AsyncConfig {
 
     @Bean(name = "asyncExecutor")
     public Executor asyncExecutor() {
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(corePoolSize);
-        executor.setMaxPoolSize(maxPoolSize);
-        executor.setQueueCapacity(queueCapacity);
-        executor.setKeepAliveSeconds(idleTimeout / 10000);
-        executor.setThreadNamePrefix("AsyncThread-");
-        executor.initialize();
-        return executor;
+//        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+//        executor.setCorePoolSize(corePoolSize);
+//        executor.setMaxPoolSize(maxPoolSize);
+//        executor.setQueueCapacity(queueCapacity);
+//        executor.setKeepAliveSeconds(idleTimeout / 10000);
+//        executor.setThreadNamePrefix("AsyncThread-");
+//        executor.initialize();
+//        return executor;
+        return new ExecutorLord(corePoolSize, maxPoolSize, queueCapacity, idleTimeout);
     }
 }
 

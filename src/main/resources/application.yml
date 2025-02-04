@@ -71,6 +71,13 @@ spring:
       request-timeout-ms: 30000                 # Thời gian chờ tối đa cho một request (mặc định 30000ms)
       delivery-timeout-ms: 120000                # Tổng thời gian tối đa (gồm cả retry) cho một message (mặc định 120000ms)
       retry-backoff-ms: 1000                    # Thời gian chờ giữa các lần retry (mặc định 100ms)
+    consumer:
+      bootstrap-servers: localhost:9092,localhost:9090
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.JsonDeserializer
+      group-id: product-created-events
+      properties:
+        spring.json.trusted.packages: "*"
 #eureka:
 #  client:
 #    service-url:
