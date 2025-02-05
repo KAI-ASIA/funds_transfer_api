@@ -50,7 +50,6 @@ public class ConsolidationJob {
                 if (queue.getQueueSize() < maxQueueSize) {
                     List<TransactionInfo> transactionInfos = transactionInfoDAO.getTransactionInfoByStatus(TransactionStatus.CONSOLIDATION.name(), maxQueueSize - queue.getQueueSize());
                     transactionInfos.forEach(queue::addToQueue);
-
                 }
                 Thread.sleep(period * 1000L);
             } catch (Exception e) {

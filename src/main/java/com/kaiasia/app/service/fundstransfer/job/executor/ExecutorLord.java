@@ -124,10 +124,12 @@ public class ExecutorLord implements Executor, AutoCloseable {
                 }
                 continue;
             }
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
+            synchronized (taskQueueLock) {
+                try {
+                    taskQueueLock.wait();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
         log.info("Process queue thread terminated");
@@ -186,7 +188,7 @@ public class ExecutorLord implements Executor, AutoCloseable {
          * @see #notifyAll()
          */
         public void setTask(Runnable task) {
-            if (task != null) {
+            if (this.task != null) {
                 throw new IllegalStateException("Task is already set");
             }
             synchronized (this) {
@@ -282,7 +284,10 @@ public class ExecutorLord implements Executor, AutoCloseable {
         if (taskQueue.size() == queueCapacity) {
             throw new IllegalStateException("Task queue is full");
         }
-        taskQueue.addTask(command);
+        synchronized (taskQueueLock) {
+            taskQueue.addTask(command);
+            taskQueueLock.notifyAll();
+        }
     }
 
     /**

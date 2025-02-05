@@ -46,7 +46,8 @@ public class FundsTransferOutSide {
     @Value("${kai.name}")
     private String requestApi;
 
-    public FundsTransferOutSide(GetErrorUtils getErrorUtils, DepApiConfig depApiConfig, KaiApiRequestBuilderFactory kaiApiRequestBuilderFactory,
+    public FundsTransferOutSide(GetErrorUtils getErrorUtils, DepApiConfig depApiConfig,
+                                KaiApiRequestBuilderFactory kaiApiRequestBuilderFactory,
                                 ITransactionInfoDAO transactionInfoDAO, ExceptionHandler exceptionHandler,
                                 T24UtilClient t24UtilClient, AuthenClient authenClient) {
         this.getErrorUtils = getErrorUtils;
