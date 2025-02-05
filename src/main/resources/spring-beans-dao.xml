@@ -33,4 +33,11 @@
         <property name="apiName" value="${dep-api.auth-api.apiName}"/>
         <property name="apiTimeout" value="${dep-api.auth-api.timeout}"/>
     </bean>
+
+    <bean id="napasClient" class="com.kaiasia.app.service.fundstransfer.utils.napasclient.NapasClient">
+        <property name="url" value="${dep-api.napas-api.url}"/>
+        <property name="apiKey" value="${dep-api.napas-api.apiKey}"/>
+        <property name="apiName" value="${dep-api.napas-api.apiName}"/>
+        <property name="apiTimeout" value="${dep-api.napas-api.timeout}"/>
+    </bean>
 </beans>

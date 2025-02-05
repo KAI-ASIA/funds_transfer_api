@@ -98,9 +98,9 @@ dep-api:
     url: http://14.225.254.212:8082/T24_UTIL_API/process
     timeout: 60000
     apiKey: VDI0X1VUSUxfQVBJ
-  napasApi:
+  napas-api:
     apiName: NAPAS_API
-    url: http://localhost:8025/NAPAS_API/process
+    url: http://14.225.254.212:8083/NAPAS_API/process
     timeout: 60000
     apiKey: napas861klfoni1ezxl5f2ck771
 job:

@@ -11,7 +11,7 @@ import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.concurrent.*;
 
-@Component
+//@Component
 @Slf4j
 public class ConsolidationFTJob {
     private final ConsolidationFTTask task;
