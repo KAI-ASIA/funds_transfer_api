@@ -10,6 +10,7 @@ import com.kaiasia.app.service.fundstransfer.dao.ITransactionInfoDAO;
 import com.kaiasia.app.service.fundstransfer.exception.ExceptionHandler;
 import com.kaiasia.app.service.fundstransfer.exception.InsertFailedException;
 import com.kaiasia.app.service.fundstransfer.exception.UpdateFailedException;
+import com.kaiasia.app.service.fundstransfer.job.executor.ExecutorLord;
 import com.kaiasia.app.service.fundstransfer.model.entity.TransactionInfo;
 import com.kaiasia.app.service.fundstransfer.model.enums.TransactionStatus;
 import com.kaiasia.app.service.fundstransfer.model.request.FundsTransferIn;
@@ -23,24 +24,38 @@ import ms.apiclient.model.*;
 import ms.apiclient.t24util.T24FundTransferResponse;
 import ms.apiclient.t24util.T24Request;
 import ms.apiclient.t24util.T24UtilClient;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 @KaiService
 @Slf4j
 @RequiredArgsConstructor
 public class FTInsideService {
     private final GetErrorUtils apiErrorUtils;
-    private final KaiApiRequestBuilderFactory kaiApiRequestBuilderFactory;
     private final ITransactionInfoDAO transactionInfoDAO;
     private final ExceptionHandler exceptionHandler;
     private final AuthenClient authenClient;
     private final T24UtilClient t24UtilClient;
-    private final AsyncTask asyncTask;
+//    private final AsyncTask asyncTask;
+    @Value("${spring.config.async.core-pool-size}")
+    private int corePoolSize;
+
+    @Value("${spring.config.async.max-pool-size}")
+    private int maxPoolSize;
+
+    @Value("${spring.config.async.queue-capacity}")
+    private int queueCapacity;
+
+    @Value("${spring.config.async.idleTimeout}")
+    private int idleTimeout;
+
+    private final Executor executorLord = new ExecutorLord(corePoolSize, maxPoolSize, queueCapacity, idleTimeout);
 
     @KaiMethod(name = "KAI.API.FT.IN", type = Register.VALIDATE)
     public ApiError validate(ApiRequest req) {
@@ -169,8 +184,25 @@ public class FTInsideService {
             params.put("last_update", new Date());
             params.put("status", TransactionStatus.DONE.toString());
 
-            // Cập nhật thông tin vào db Transaction_info
-            asyncTask.asyncUpdateTransaction(transactionInfo.getTransactionId(), params);
+            // Cập nhật thông tin vào db Transaction_info theo bất đồng bộ
+//            asyncTask.asyncUpdateTransaction(transactionInfo.getTransactionId(), params);
+            CompletableFuture<String> futureUpdate = CompletableFuture.supplyAsync(() -> {
+                try {
+                    transactionInfoDAO.update(transactionInfo.getTransactionId(), params);
+                } catch (Exception e) {
+                    throw new UpdateFailedException(e);
+                }
+                return transactionInfo.getTransactionId();
+            }, executorLord);
+
+            futureUpdate.handle((result, ex) -> {
+                if (ex != null) {
+                    log.error("Transaction update failed for ID: {}", transactionInfo.getTransactionId(), ex);
+                } else {
+                    log.warn("Transaction updated successfully: {}", result);
+                }
+                return result;  // Trả về kết quả hoặc null
+            });
 
             header.setReqType("RESPONSE");
             body.put("transaction", t2405Response);
