@@ -10,7 +10,7 @@
     </parent>
     <groupId>ms.kaiasia.client</groupId>
     <artifactId>kai-client</artifactId>
-    <version>20250119</version>
+    <version>20250206</version>
     <name>app</name>
     <description>Common Framework for KaiAsia</description>
     <properties>
