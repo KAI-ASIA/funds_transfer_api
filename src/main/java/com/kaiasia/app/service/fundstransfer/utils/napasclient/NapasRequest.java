@@ -19,6 +19,6 @@ public class NapasRequest {
     private String amount;
     private String ccy;
     private String transRef;
-    private String benAccount;
+    private String benAcc;
     private String transContent;
 }

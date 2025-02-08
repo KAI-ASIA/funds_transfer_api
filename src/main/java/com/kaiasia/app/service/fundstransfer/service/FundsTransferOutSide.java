@@ -88,18 +88,18 @@ public class FundsTransferOutSide {
             username = authTakeSessionResponse.getUsername();
 
             // Call Auth-3 Confirm OTP
-            AuthOTPResponse authOTPResponse = authenClient.confirmOTP(location, AuthRequest.builder()
-                    .sessionId(requestTransaction.getSessionId())
-                    .username(username).otp(requestTransaction.getOtp())
-                    .transTime(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()))
-                    .transId(requestTransaction.getTransactionId())
-                    .build(), header);
-            error = authOTPResponse.getError();
-            if (!ApiError.OK_CODE.equals(error.getCode())) {
-                log.error("{}:{}", location + "#After call Auth-3", error);
-                response.setError(error);
-                return response;
-            }
+//            AuthOTPResponse authOTPResponse = authenClient.confirmOTP(location, AuthRequest.builder()
+//                    .sessionId(requestTransaction.getSessionId())
+//                    .username(username).otp(requestTransaction.getOtp())
+//                    .transTime(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()))
+//                    .transId(requestTransaction.getTransactionId())
+//                    .build(), header);
+//            error = authOTPResponse.getError();
+//            if (!ApiError.OK_CODE.equals(error.getCode())) {
+//                log.error("{}:{}", location + "#After call Auth-3", error);
+//                response.setError(error);
+//                return response;
+//            }
 
             String customerId = requestTransaction.getCustomerID();
             TransactionInfo transactionInfo = TransactionInfo.builder()
@@ -150,7 +150,7 @@ public class FundsTransferOutSide {
             NapasTransFastAccResponse napasTransFastAccResponse = napasClient.napasTransFastAcc(location, NapasRequest.builder()
                     .senderAccount(requestTransaction.getDebitAccount()).amount(requestTransaction.getTransAmount()).ccy("VND")
                     .transContent(requestTransaction.getTransDesc()).transRef(t24FundTransferResponse.getTransactionNO())
-                    .benAccount(requestTransaction.getCreditAccount()).bankId(requestTransaction.getBankId()).build(), header);
+                    .benAcc(requestTransaction.getCreditAccount()).bankId(requestTransaction.getBankId()).build(), header);
 
             error = napasTransFastAccResponse.getError();
             if (!ApiError.OK_CODE.equals(error.getCode())) {

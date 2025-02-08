@@ -11,8 +11,8 @@
         <!-- lookup parent from repository -->
     </parent>
     <groupId>com.kaiasia</groupId>
-    <artifactId>app</artifactId>
-    <version>20250121</version>
+    <artifactId>FUNDTRANSFER</artifactId>
+    <version>20250205</version>
     <name>app</name>
     <description>Funds Transfer Api</description>
     <properties>
@@ -74,7 +74,7 @@
         <dependency>
             <groupId>org.reflections</groupId>
             <artifactId>reflections</artifactId>
-            <version>0.10.2</version>
+            <version>0.9.10</version>
         </dependency>
 
         <dependency>
@@ -85,7 +85,7 @@
         <dependency>
             <groupId>ms.kaiasia.client</groupId>
             <artifactId>kai-client</artifactId>
-            <version>20250119</version>
+            <version>20250206</version>
         </dependency>
 
     </dependencies>

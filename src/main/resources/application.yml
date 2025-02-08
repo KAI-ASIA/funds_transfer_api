@@ -78,10 +78,10 @@ spring:
       group-id: product-created-events
       properties:
         spring.json.trusted.packages: "*"
-#eureka:
-#  client:
-#    service-url:
-#      defaultZone: http://14.225.254.212:8761/eureka
+eureka:
+  client:
+    service-url:
+      defaultZone: http://14.225.254.212:8761/eureka
 
 dbinfo:
   apiRequest: request_in
